@@ -1,0 +1,2 @@
+# copr-repo  package
+tokariew/i3lock-color  i3lock-color

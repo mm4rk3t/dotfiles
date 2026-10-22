@@ -1,0 +1,7 @@
+[general]
+import = ["~/.cache/wallust/alacritty.toml"]
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\u001B\r"

@@ -1,0 +1,43 @@
+# Window manager & desktop
+i3
+i3status
+polybar
+rofi
+dmenu
+dunst
+picom
+feh
+nitrogen
+xrandr
+xss-lock
+dex-autostart
+network-manager-applet
+blueman
+brightnessctl
+pulseaudio-utils
+lxappearance
+
+# Terminal & editor
+alacritty
+neovim
+zsh
+git
+ripgrep
+
+# Screenshots / clipboard
+maim
+xclip
+xdotool
+flameshot
+
+# Fonts
+google-noto-color-emoji-fonts
+
+# Tooling (stow for symlinks, rust for wallust, build deps for nvim plugins)
+stow
+cargo
+rust
+gcc
+make
+curl
+unzip

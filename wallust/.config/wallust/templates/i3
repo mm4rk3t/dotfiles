@@ -1,0 +1,14 @@
+# i3 color definitions via wallust
+set $background {{background}}
+set $foreground {{foreground}}
+set $cursor {{cursor}}
+set $color1 {{color1}}
+set $color2 {{color2}}
+set $color4 {{color4}}
+set $color8 {{color8}}
+
+# class                 border      background  text        indicator   child_border
+client.focused          $color4     $color4     $background $color4     $color4
+client.focused_inactive $color8     $color8     $foreground $color8     $color8
+client.unfocused        $background $background $foreground $background $background
+client.urgent           $color1     $color1     $background $color1     $color1

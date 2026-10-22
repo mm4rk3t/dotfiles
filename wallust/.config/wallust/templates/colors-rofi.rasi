@@ -1,0 +1,7 @@
+* {
+    background: {{background}};
+    foreground: {{foreground}};
+    accent:     {{color1}};
+    selected:   {{color2}};
+    urgent:     {{color3}};
+}

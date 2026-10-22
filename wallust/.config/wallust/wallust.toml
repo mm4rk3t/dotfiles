@@ -1,0 +1,16 @@
+backend = "kmeans"
+colorspace = "lab"
+palette = "dark16"
+filter = "lanczos3"
+check_contrast = true
+saturation = 45
+threshold = 15
+
+[templates]
+alacritty = { template = "alacritty.toml", target = "~/.cache/wallust/alacritty.toml" }
+polybar   = { template = "polybar.ini",    target = "~/.cache/wallust/polybar.ini" }
+neopywal = { template = "colors_neopywal.vim", target = "~/.cache/wallust/colors_neopywal.vim" }
+i3 = { src = 'i3', dst = '~/.config/i3/colors.conf' }
+rofi = { src = 'colors-rofi.rasi', target = '~/.config/rofi/colors-rofi.rasi' }
+dunst = { template = "dunstrc", target = "~/.config/dunst/dunstrc" }
+lock = { template = "lock.sh", target = "~/.config/i3/scripts/lock.sh" }
