@@ -1,0 +1,8 @@
+[Unit]
+Description=Trigger monitor reconfiguration in %i's session
+
+# udev's sandbox can't reach the user bus directly, so hop through a system unit
+[Service]
+Type=oneshot
+User=%i
+ExecStart=/bin/sh -c 'XDG_RUNTIME_DIR=/run/user/$(id -u) exec /usr/bin/systemctl --user --no-block start monitor-hotplug.service'
