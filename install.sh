@@ -94,8 +94,10 @@ link_dotfiles() {
 
 install_udev_rules() {
     log "Installing udev rule for monitor hotplug"
-    sed "s/=@USER@@/=$USER@/" "$DOTFILES/system/udev/95-monitor-hotplug.rules" \
+    sudo cp "$DOTFILES/system/systemd/monitor-hotplug@.service" /etc/systemd/system/
+    sed "s/hotplug@@USER@/hotplug@$USER/" "$DOTFILES/system/udev/95-monitor-hotplug.rules" \
         | sudo tee /etc/udev/rules.d/95-monitor-hotplug.rules >/dev/null
+    sudo systemctl daemon-reload
     sudo udevadm control --reload
 }
 
