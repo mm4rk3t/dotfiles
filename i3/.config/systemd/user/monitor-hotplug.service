@@ -1,0 +1,8 @@
+[Unit]
+Description=Reconfigure monitors after a hotplug event
+
+[Service]
+Type=oneshot
+# Give the kernel a moment to read the EDID before querying xrandr
+ExecStartPre=/usr/bin/sleep 1
+ExecStart=%h/.config/i3/monitors.sh

@@ -92,6 +92,13 @@ link_dotfiles() {
     [[ -d "$BACKUP_DIR" ]] && log "Previous files saved in $BACKUP_DIR"
 }
 
+install_udev_rules() {
+    log "Installing udev rule for monitor hotplug"
+    sed "s/=@USER@@/=$USER@/" "$DOTFILES/system/udev/95-monitor-hotplug.rules" \
+        | sudo tee /etc/udev/rules.d/95-monitor-hotplug.rules >/dev/null
+    sudo udevadm control --reload
+}
+
 generate_colors() {
     log "Generating colors from the default wallpaper with wallust"
     mkdir -p "$HOME/Pictures/sc" "$HOME/.cache/wallust"
@@ -102,6 +109,7 @@ generate_colors() {
 (( INSTALL_PACKAGES )) && install_packages
 install_gtk_theme
 link_dotfiles
+install_udev_rules
 generate_colors
 
 log "Done. Log out and pick i3 at the login screen (or press \$mod+Shift+r if already in i3)."

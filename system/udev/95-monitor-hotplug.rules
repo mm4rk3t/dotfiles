@@ -1,0 +1,3 @@
+# Run ~/.config/i3/monitors.sh (via a user service) when a monitor is plugged or unplugged.
+# @USER@ is replaced by install.sh.
+ACTION=="change", SUBSYSTEM=="drm", RUN+="/usr/bin/systemctl --user --machine=@USER@@ --no-block start monitor-hotplug.service"
