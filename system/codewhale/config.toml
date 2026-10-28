@@ -1,0 +1,19 @@
+provider = "deepseek"
+telemetry = false
+instructions = ["~/.claude/CLAUDE.md"]
+route_preferences_version = 1
+auth_mode = "api_key"
+reasoning_effort = "max"
+
+[hooks]
+enabled = true
+
+[[hooks.hooks]]
+name = "engram-context"
+event = "message_submit"
+command = "~/.codewhale/hooks/engram-context.sh"
+timeout_secs = 15
+
+[providers.deepseek]
+auth_mode = "api_key"
+model = "deepseek-flash"
