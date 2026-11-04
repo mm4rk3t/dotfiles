@@ -1,6 +1,5 @@
 exec_always --no-startup-id ~/.config/i3/scripts/set_wallpaper.sh
 exec_always --no-startup-id picom --config ~/.config/picom.conf -b
-exec_always --no-startup-id blueman-applet
 
 set $mod Mod4
 
@@ -29,7 +28,6 @@ font pango:monospace 8
 exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XAUTHORITY XDG_CURRENT_DESKTOP && systemctl --user start i3-session.target
 exec --no-startup-id dex-autostart --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/scripts/lock.sh
-exec --no-startup-id nm-applet
 
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
