@@ -11,7 +11,7 @@ set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin)
+STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin fonts fontconfig)
 ENGRAM_VERSION=3.6.0
 CODEWHALE_VERSION=0.10.2
 DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/forest-clouds.jpg"
@@ -93,6 +93,7 @@ link_dotfiles() {
         stow --no-folding --restow -d "$DOTFILES" -t "$HOME" "$pkg"
     done
     [[ -d "$BACKUP_DIR" ]] && log "Previous files saved in $BACKUP_DIR"
+    fc-cache -f "$HOME/.local/share/fonts" >/dev/null
 }
 
 install_udev_rules() {
