@@ -4,7 +4,7 @@
 @import "~/.config/rofi/colors-rofi.rasi"
 
 * {
-    font:             "Monaspace Xenon Slashed 11";
+    font:             "Monaspace Xenon Slashed 10";
     bg:               #000000;
     bg-alt:           #1a1a1a;
     background-color: transparent;
