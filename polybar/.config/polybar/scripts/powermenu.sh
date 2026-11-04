@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Power menu for polybar (rofi)
-choice=$(printf '%s\n' "󰌾  Lock" "󰤄  Suspend" "󰍃  Log out" "󰜉  Reboot" "󰐥  Shut down" |
+choice=$(printf '%s\n' "Lock" "Suspend" "Log out" "Reboot" "Shut down" |
   # No search bar; top-right corner with the same offset as dunst (15, 57),
   # so it lines up with the bar and the notifications.
   rofi -dmenu -i -no-custom -p "Power" -theme-str '

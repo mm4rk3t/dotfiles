@@ -25,7 +25,7 @@ font pango:monospace 8
 
 # Give systemd user services the X session, then start graphical-session.target
 # (xdg-desktop-portal needs it; it carries dark mode to GTK4/Electron apps)
-exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XAUTHORITY XDG_CURRENT_DESKTOP && systemctl --user start i3-session.target
+exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XAUTHORITY XDG_CURRENT_DESKTOP QT_QPA_PLATFORMTHEME && systemctl --user start i3-session.target
 exec --no-startup-id dex-autostart --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/scripts/lock.sh
 
