@@ -1,2 +1,5 @@
-@import "~/.config/rofi/colors-rofi.rasi"
-@theme "/usr/share/rofi/themes/purple.rasi"
+configuration {
+    show-icons: true;
+    display-drun: "run";
+}
+@theme "~/.config/rofi/theme.rasi"

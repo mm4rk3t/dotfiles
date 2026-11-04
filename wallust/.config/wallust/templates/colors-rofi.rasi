@@ -1,7 +1,7 @@
 * {
     background: {{background}};
     foreground: {{foreground}};
-    accent:     {{color1}};
-    selected:   {{color2}};
+    muted:      {{color8}};
+    accent:     {{color2}};
     urgent:     {{color3}};
 }
