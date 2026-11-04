@@ -4,9 +4,13 @@
 primary=eDP-1
 externals="DP-1 DP-2 HDMI-1 HDMI-2"
 
+# `xrandr --query` re-probes every output and stalls the X server ~1s each time,
+# so probe once and reuse the result
+state=$(xrandr --query)
+
 secondary=
 for out in $externals; do
-    if xrandr --query | grep -q "^$out connected"; then
+    if printf '%s\n' "$state" | grep -q "^$out connected"; then
         secondary=$out
     else
         xrandr --output $out --off
@@ -18,7 +22,7 @@ if [ -z "$secondary" ]; then
     exit 0
 fi
 
-if xrandr --query | sed -n "/^$secondary/,/^[A-Za-z]/p" | grep -q '^ *1920x1080 '; then
+if printf '%s\n' "$state" | sed -n "/^$secondary/,/^[A-Za-z]/p" | grep -q '^ *1920x1080 '; then
     mode=1920x1080
 else
     mode=1920x1080_60
