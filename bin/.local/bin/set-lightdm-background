@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Use an image as the LightDM (gtk-greeter) login screen background.
+#
+#   set-lightdm-background ~/Pictures/wallpapers/forest-clouds.jpg
+#
+# The greeter runs as the lightdm user and can't read ~, so the image is
+# copied to /usr/share/backgrounds first. Needs sudo.
+set -euo pipefail
+
+img="${1:?usage: set-lightdm-background /path/to/image}"
+[[ -f "$img" ]] || { echo "not a file: $img" >&2; exit 1; }
+
+conf=/etc/lightdm/lightdm-gtk-greeter.conf
+dest="/usr/share/backgrounds/$(basename "$img")"
+
+sudo install -m644 "$img" "$dest"
+if sudo grep -q '^background=' "$conf"; then
+    sudo sed -i "s|^background=.*|background=$dest|" "$conf"
+else
+    # no active background= line yet: add one under [greeter]
+    sudo sed -i "/^\[greeter\]/a background=$dest" "$conf"
+fi
+echo "LightDM background: $dest (shown at next login screen)"

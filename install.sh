@@ -11,7 +11,7 @@ set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart)
+STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin)
 ENGRAM_VERSION=3.6.0
 CODEWHALE_VERSION=0.10.2
 DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/forest-clouds.jpg"
@@ -104,6 +104,11 @@ install_udev_rules() {
     sudo udevadm control --reload
 }
 
+set_login_background() {
+    log "Using the default wallpaper as the LightDM login background"
+    "$DOTFILES/bin/.local/bin/set-lightdm-background" "$DEFAULT_WALLPAPER"
+}
+
 generate_colors() {
     log "Generating colors from the default wallpaper with wallust"
     mkdir -p "$HOME/Pictures/sc" "$HOME/.cache/wallust"
@@ -167,6 +172,7 @@ install_gtk_theme
 link_dotfiles
 configure_ai_tools
 install_udev_rules
+set_login_background
 generate_colors
 
 log "Done. Log out and pick i3 at the login screen (or press \$mod+Shift+r if already in i3)."
