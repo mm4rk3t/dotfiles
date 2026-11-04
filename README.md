@@ -17,8 +17,10 @@ Then log out and choose i3 at the login screen.
 1. Installs the packages in `packages/dnf.txt`, the COPR packages in `packages/copr.txt` (i3lock-color) and the cargo crates in `packages/cargo.txt` (wallust).
 2. Installs oh-my-zsh and sets zsh as the login shell.
 3. Unpacks the GTK theme from `assets/` into `~/.local/share/themes`.
-4. Symlinks every config into `$HOME` with GNU stow. Existing files are moved to `~/.dotfiles-backup/<timestamp>/` first.
-5. Runs wallust on the default wallpaper to generate the color files.
+4. Installs Claude Code, [engram](https://github.com/Gentleman-Programming/engram) and [Codewhale](https://github.com/codewhale-hq/Codewhale) into `~/.local/bin` (versions pinned at the top of `install.sh`, checksums verified).
+5. Symlinks every config into `$HOME` with GNU stow. Existing files are moved to `~/.dotfiles-backup/<timestamp>/` first.
+6. Connects engram to Claude Code (`engram setup claude-code`) and Codewhale (MCP server), and copies `system/codewhale/config.toml` if there is none.
+7. Runs wallust on the default wallpaper to generate the color files.
 
 Use `./install.sh --no-packages` to only relink configs and regenerate colors.
 
@@ -38,6 +40,14 @@ Each top-level directory is a stow package that mirrors `$HOME`:
 | `zsh`       | `.zshrc`                                              |
 | `nvim`      | Neovim config (lazy.nvim + neopywal)                  |
 | `wallpaper` | `~/Pictures/wallpapers`, the default wallpaper        |
+| `claude`    | `~/.claude/CLAUDE.md`, global instructions for every agent |
+| `codewhale` | Codewhale `AGENTS.md` and the engram context hook     |
+
+## AI agents
+
+Claude Code is the main agent; Codewhale (DeepSeek) is optional for cheap bulk work. Both share one memory, engram (`~/.engram/engram.db`, not tracked). `~/.claude/CLAUDE.md` is the single instruction file: Codewhale loads it through `instructions` in its config.
+
+Not tracked on purpose: `~/.claude/settings.json` (holds tokens and work plugins), `~/.claude.json`, API keys and the engram database. Codewhale refuses a symlinked `config.toml`, so it lives in `system/codewhale/` and is copied once; copy changes back by hand.
 
 ## Generated files
 

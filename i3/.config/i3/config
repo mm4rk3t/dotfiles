@@ -10,6 +10,8 @@ include ~/.config/i3/colors.conf
 for_window [class="^.*"] border pixel 2
 gaps inner 10
 gaps outer 5
+# room for the floating polybar: 15px gap + 27px bar + 15px gap (minus inner 10)
+gaps top 47
 
 for_window [class="flameshot"] floating enable
 for_window [class="Alacritty"] floating enable
@@ -22,6 +24,9 @@ exec_always --no-startup-id ~/.config/i3/monitors.sh
 font pango:monospace 8
 #font pango:DejaVu Sans Mono 8
 
+# Give systemd user services the X session, then start graphical-session.target
+# (xdg-desktop-portal needs it; it carries dark mode to GTK4/Electron apps)
+exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XAUTHORITY XDG_CURRENT_DESKTOP && systemctl --user start i3-session.target
 exec --no-startup-id dex-autostart --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/scripts/lock.sh
 exec --no-startup-id nm-applet
@@ -136,3 +141,15 @@ mode "resize" {
         bindsym $mod+r mode "default"
 }
 bindsym $mod+r mode "resize"
+
+# Polybar calendar popup: float it where the mouse is (the date in the bar)
+for_window [title="^polybar-calendar$"] floating enable, move position mouse, sticky enable
+
+# Settings popups from the bar/tray (wifi, bluetooth, volume) float centered
+for_window [class="(?i)^nm-connection-editor$"] floating enable, resize set 720 480, move position center
+for_window [class="(?i)^nm-applet$"] floating enable, move position center
+for_window [class="(?i)^blueman-"] floating enable, resize set 720 480, move position center
+for_window [class="(?i)pavucontrol"] floating enable, resize set 720 480, move position center
+# 1Password: main window and Quick Access (X11 class com.onepassword.OnePassword)
+for_window [class="(?i)onepassword|1password"] floating enable, move position center
+for_window [class="(?i)onepassword|1password" title="^(?!Quick Access)"] resize set 1000 720, move position center

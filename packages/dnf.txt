@@ -7,10 +7,13 @@ dmenu
 dunst
 picom
 feh
+ImageMagick
+zenity
 nitrogen
 xrandr
 xss-lock
 dex-autostart
+xdg-desktop-portal-gtk
 network-manager-applet
 blueman
 brightnessctl
@@ -41,3 +44,4 @@ gcc
 make
 curl
 unzip
+playerctl

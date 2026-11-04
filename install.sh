@@ -9,9 +9,12 @@
 # file that would be replaced by a symlink is moved to ~/.dotfiles-backup/<ts>/.
 set -euo pipefail
 
+export PATH="$HOME/.local/bin:$PATH"
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper)
-DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/Steins Gate Makise Kurisu Okabe Rintarou Gj Wallpaper.jpg"
+STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin fonts fontconfig)
+ENGRAM_VERSION=3.6.0
+CODEWHALE_VERSION=0.10.2
+DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/forest-clouds.jpg"
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 INSTALL_PACKAGES=1
@@ -97,6 +100,7 @@ link_dotfiles() {
         stow --no-folding --restow -d "$DOTFILES" -t "$HOME" "$pkg"
     done
     [[ -d "$BACKUP_DIR" ]] && log "Previous files saved in $BACKUP_DIR"
+    fc-cache -f "$HOME/.local/share/fonts" >/dev/null
 }
 
 install_udev_rules() {
@@ -108,6 +112,20 @@ install_udev_rules() {
     sudo udevadm control --reload
 }
 
+# Dark mode for GTK4/libadwaita and Electron/Chromium apps (they read the
+# portal setting, not settings.ini), and the wallust-recolored GTK theme.
+set_theme() {
+    log "Building the wallust GTK theme and enabling dark mode"
+    "$DOTFILES/bin/.local/bin/gtk-theme-wallust"
+    gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+    gsettings set org.gnome.desktop.interface gtk-theme Material-Black-Wallust
+}
+
+sync_login_screen() {
+    log "Matching the LightDM login screen to the desktop"
+    "$DOTFILES/bin/.local/bin/sync-lightdm" "$DEFAULT_WALLPAPER"
+}
+
 generate_colors() {
     log "Generating colors from the default wallpaper with wallust"
     mkdir -p "$HOME/Pictures/sc" "$HOME/.cache/wallust"
@@ -115,10 +133,64 @@ generate_colors() {
     chmod +x "$HOME/.config/i3/scripts/lock.sh"
 }
 
+# Download a release asset and check it against the release's checksum file.
+fetch_verified() {
+    local repo=$1 tag=$2 asset=$3 sums=$4 dir=$5
+    curl -fsSLo "$dir/$asset" "https://github.com/$repo/releases/download/$tag/$asset"
+    curl -fsSLo "$dir/$sums" "https://github.com/$repo/releases/download/$tag/$sums"
+    (cd "$dir" && grep " $asset\$" "$sums" | sha256sum -c -)
+}
+
+install_ai_tools() {
+    local tmp
+    tmp="$(mktemp -d)"
+    mkdir -p "$HOME/.local/bin"
+
+    if ! command -v claude >/dev/null; then
+        log "Installing Claude Code"
+        curl -fsSL https://claude.ai/install.sh | bash
+    fi
+
+    if [[ "$(engram version 2>/dev/null)" != "engram $ENGRAM_VERSION" ]]; then
+        log "Installing engram $ENGRAM_VERSION"
+        fetch_verified Gentleman-Programming/engram "v$ENGRAM_VERSION" \
+            "engram_${ENGRAM_VERSION}_linux_amd64.tar.gz" checksums.txt "$tmp"
+        tar -xzf "$tmp/engram_${ENGRAM_VERSION}_linux_amd64.tar.gz" -C "$tmp" engram
+        install -m755 "$tmp/engram" "$HOME/.local/bin/engram"
+    fi
+
+    if ! codewhale --version 2>/dev/null | grep -q "^codewhale $CODEWHALE_VERSION "; then
+        log "Installing Codewhale $CODEWHALE_VERSION"
+        fetch_verified codewhale-hq/Codewhale "v$CODEWHALE_VERSION" \
+            codewhale-linux-x64.tar.gz codewhale-artifacts-sha256.txt "$tmp"
+        tar -xzf "$tmp/codewhale-linux-x64.tar.gz" -C "$tmp"
+        install -m755 "$tmp/codewhale-linux-x64/codewhale" "$tmp/codewhale-linux-x64/codew" "$HOME/.local/bin/"
+    fi
+    rm -rf "$tmp"
+}
+
+# Codewhale rejects a symlinked config.toml, so it is copied instead of stowed.
+configure_ai_tools() {
+    command -v engram >/dev/null || return 0
+    log "Connecting engram to Claude Code and Codewhale"
+    command -v claude >/dev/null && engram setup claude-code
+    if command -v codewhale >/dev/null; then
+        mkdir -p "$HOME/.codewhale"
+        [[ -e "$HOME/.codewhale/config.toml" ]] ||
+            install -m600 "$DOTFILES/system/codewhale/config.toml" "$HOME/.codewhale/config.toml"
+        codewhale mcp list 2>/dev/null | grep -q '^  - engram ' ||
+            codewhale mcp add engram --command "$HOME/.local/bin/engram" --arg mcp --arg --tools=agent
+    fi
+}
+
 (( INSTALL_PACKAGES )) && install_packages
 install_gtk_theme
+(( INSTALL_PACKAGES )) && install_ai_tools
 link_dotfiles
+configure_ai_tools
 install_udev_rules
 generate_colors
+set_theme
+sync_login_screen
 
 log "Done. Log out and pick i3 at the login screen (or press \$mod+Shift+r if already in i3)."

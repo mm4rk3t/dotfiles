@@ -4,17 +4,18 @@
 exec i3lock \
     --nofork \
     -c {{ background | strip }}ff \
-    --blur=7 \
+    --image="$HOME/.cache/lock-wallpaper.png" \
+    --fill \
     --inside-color=00000000 \
     --ring-color={{ color8 | strip }}ff \
     --line-uses-ring \
     --insidever-color={{ background | strip }}ff \
-    --ringver-color={{ color1 | strip }}ff \
+    --ringver-color={{ color2 | strip }}ff \
     --insidewrong-color={{ background | strip }}ff \
     --ringwrong-color={{ color3 | strip }}ff \
-    --keyhl-color={{ color1 | strip }}ff \
+    --keyhl-color={{ color2 | strip }}ff \
     --bshl-color={{ color3 | strip }}ff \
-    --separator-color={{ color1 | strip }}ff \
+    --separator-color={{ color2 | strip }}ff \
     --verif-color={{ foreground | strip }}ff \
     --wrong-color={{ foreground | strip }}ff \
     --modif-color={{ foreground | strip }}ff \

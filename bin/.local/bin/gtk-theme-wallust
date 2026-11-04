@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Build Material-Black-Wallust: a copy of Material-Black-Blueberry with its
+# blue accent (#387db7) swapped for the wallust accent, so GTK apps match
+# the bar, i3, dunst and rofi. Re-run after wallust (set_wallpaper.sh does).
+set -euo pipefail
+
+src=""
+for d in "$HOME/.local/share/themes/Material-Black-Blueberry" /usr/share/themes/Material-Black-Blueberry; do
+    [[ -d "$d" ]] && { src=$d; break; }
+done
+[[ -n "$src" ]] || { echo "Material-Black-Blueberry not installed" >&2; exit 1; }
+
+# shellcheck source=/dev/null
+source "$HOME/.cache/wallust/colors.sh"
+hex=${accent#\#}
+r=$((16#${hex:0:2})) g=$((16#${hex:2:2})) b=$((16#${hex:4:2}))
+
+dest="$HOME/.local/share/themes/Material-Black-Wallust"
+mkdir -p "$HOME/.local/share/themes"
+tmp="$(mktemp -d "$HOME/.local/share/themes/.wallust.XXXXXX")"
+cp -r "$src/." "$tmp/"
+find "$tmp" -type f \( -name '*.css' -o -name 'gtkrc*' -o -name '*.theme' \) -exec sed -i \
+    -e "s/#387db7/#$hex/gI" \
+    -e "s/rgba(56, *125, *183,/rgba($r, $g, $b,/g" \
+    -e "s/Material-Black-Blueberry/Material-Black-Wallust/g" {} +
+rm -rf "$dest"
+mv "$tmp" "$dest"
+echo "GTK theme Material-Black-Wallust: accent #$hex"

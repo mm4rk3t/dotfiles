@@ -105,3 +105,6 @@ source $ZSH/oh-my-zsh.sh
 export PATH="$HOME/.local/bin:$PATH"
 
 # kubectl via minikube
+
+# Machine-local secrets and overrides (not in the dotfiles repo)
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
