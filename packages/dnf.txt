@@ -13,6 +13,7 @@ nitrogen
 xrandr
 xss-lock
 dex-autostart
+xdg-desktop-portal-gtk
 network-manager-applet
 blueman
 brightnessctl

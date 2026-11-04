@@ -1,0 +1,9 @@
+[Unit]
+Description=i3 session
+Documentation=man:systemd.special(7)
+# graphical-session.target can't be started by hand; binding to it is the
+# standard way for a plain WM to bring it up. Services like
+# xdg-desktop-portal (dark mode for GTK4/Electron apps) depend on it.
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target
