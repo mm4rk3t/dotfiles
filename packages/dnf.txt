@@ -7,6 +7,8 @@ dmenu
 dunst
 picom
 feh
+ImageMagick
+zenity
 nitrogen
 xrandr
 xss-lock
@@ -41,3 +43,4 @@ gcc
 make
 curl
 unzip
+playerctl

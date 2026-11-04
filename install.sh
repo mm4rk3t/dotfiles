@@ -11,10 +11,10 @@ set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale)
+STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart)
 ENGRAM_VERSION=3.6.0
 CODEWHALE_VERSION=0.10.2
-DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/Steins Gate Makise Kurisu Okabe Rintarou Gj Wallpaper.jpg"
+DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/forest-clouds.jpg"
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 INSTALL_PACKAGES=1

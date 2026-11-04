@@ -10,6 +10,8 @@ include ~/.config/i3/colors.conf
 for_window [class="^.*"] border pixel 2
 gaps inner 10
 gaps outer 5
+# room for the floating polybar: 15px gap + 27px bar + 15px gap (minus inner 10)
+gaps top 47
 
 for_window [class="flameshot"] floating enable
 for_window [class="Alacritty"] floating enable
@@ -136,3 +138,6 @@ mode "resize" {
         bindsym $mod+r mode "default"
 }
 bindsym $mod+r mode "resize"
+
+# Polybar calendar popup: float it where the mouse is (the date in the bar)
+for_window [title="^polybar-calendar$"] floating enable, move position mouse, sticky enable

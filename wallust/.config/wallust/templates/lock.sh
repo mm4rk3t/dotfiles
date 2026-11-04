@@ -4,7 +4,8 @@
 exec i3lock \
     --nofork \
     -c {{ background | strip }}ff \
-    --blur=7 \
+    --image="$HOME/.cache/lock-wallpaper.png" \
+    --fill \
     --inside-color=00000000 \
     --ring-color={{ color8 | strip }}ff \
     --line-uses-ring \
