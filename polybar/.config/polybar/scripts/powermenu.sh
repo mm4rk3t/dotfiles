@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 # Power menu for polybar (rofi)
 choice=$(printf '%s\n' "󰌾  Lock" "󰤄  Suspend" "󰍃  Log out" "󰜉  Reboot" "󰐥  Shut down" |
-  rofi -dmenu -i -p "Power" -theme-str 'window {width: 220px; location: north east; anchor: north east; x-offset: -10px; y-offset: 40px;} listview {lines: 5;}')
+  # No search bar; top-right corner with the same offset as dunst (15, 57),
+  # so it lines up with the bar and the notifications.
+  rofi -dmenu -i -no-custom -p "Power" -theme-str '
+    window   { width: 220px; location: north east; anchor: north east; x-offset: -15px; y-offset: 57px; }
+    mainbox  { children: [ listview ]; }
+    listview { lines: 5; }')
 case "$choice" in
   *Lock)      ~/.config/i3/scripts/lock.sh ;;
   *Suspend)   systemctl suspend ;;
