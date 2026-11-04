@@ -36,8 +36,15 @@ install_packages() {
     log "Enabling COPR repos"
     while read -r repo pkg; do
         sudo dnf copr enable -y "$repo"
-        # i3lock-color replaces the stock i3lock package
-        sudo dnf install -y --allowerasing "$pkg"
+        if rpm -q "$pkg" >/dev/null; then
+            echo "$pkg already installed"
+        elif [[ "$pkg" == i3lock-color ]] && rpm -q i3lock >/dev/null; then
+            # i3lock-color ships the same files as the stock i3lock but doesn't
+            # declare a conflict, so --allowerasing won't remove it. Swap explicitly.
+            sudo dnf swap -y i3lock i3lock-color
+        else
+            sudo dnf install -y "$pkg"
+        fi
     done < <(read_list "$DOTFILES/packages/copr.txt")
 
     log "Installing cargo crates"
