@@ -1,23 +1,50 @@
 #!/usr/bin/env bash
-# Use an image as the LightDM (gtk-greeter) login screen background.
+# Make the LightDM login screen match the desktop: background, the wallust
+# GTK theme (dark, same accent), the bar font, and a minimal top panel.
 #
-#   set-lightdm-background ~/Pictures/wallpapers/forest-clouds.jpg
+#   sync-lightdm                 # keep the current background
+#   sync-lightdm /path/to/image  # also set a new background
 #
-# The greeter runs as the lightdm user and can't read ~, so the image is
-# copied to /usr/share/backgrounds first. Needs sudo.
+# The greeter runs as the lightdm user and can't read ~, so the image, the
+# theme and the font are copied to system dirs. Needs sudo. Re-run after
+# changing wallpaper to carry the new accent over.
 set -euo pipefail
 
-img="${1:?usage: set-lightdm-background /path/to/image}"
-[[ -f "$img" ]] || { echo "not a file: $img" >&2; exit 1; }
-
 conf=/etc/lightdm/lightdm-gtk-greeter.conf
-dest="/usr/share/backgrounds/$(basename "$img")"
+theme="$HOME/.local/share/themes/Material-Black-Wallust"
+font_dir="$HOME/.local/share/fonts/MonaspaceXenon"
 
-sudo install -m644 "$img" "$dest"
-if sudo grep -q '^background=' "$conf"; then
-    sudo sed -i "s|^background=.*|background=$dest|" "$conf"
-else
-    # no active background= line yet: add one under [greeter]
-    sudo sed -i "/^\[greeter\]/a background=$dest" "$conf"
+[[ -d "$theme" ]] || "$(dirname "$0")/gtk-theme-wallust"
+
+# key=value under [greeter]: replace the active line, else add one
+set_key() {
+    if sudo grep -q "^$1=" "$conf"; then
+        sudo sed -i "s|^$1=.*|$1=$2|" "$conf"
+    else
+        sudo sed -i "/^\[greeter\]/a $1=$2" "$conf"
+    fi
+}
+
+if [[ -n "${1:-}" ]]; then
+    [[ -f "$1" ]] || { echo "not a file: $1" >&2; exit 1; }
+    dest="/usr/share/backgrounds/$(basename "$1")"
+    sudo install -m644 "$1" "$dest"
+    set_key background "$dest"
 fi
-echo "LightDM background: $dest (shown at next login screen)"
+
+sudo rm -rf /usr/share/themes/Material-Black-Wallust
+sudo cp -r "$theme" /usr/share/themes/
+sudo chmod -R a+rX /usr/share/themes/Material-Black-Wallust
+
+sudo install -d /usr/local/share/fonts/monaspace
+sudo install -m644 "$font_dir"/*.ttf /usr/local/share/fonts/monaspace/
+sudo fc-cache -f /usr/local/share/fonts >/dev/null
+
+set_key theme-name Material-Black-Wallust
+set_key font-name "Monaspace Xenon Slashed 11"
+set_key cursor-theme-name Adwaita
+set_key user-background false
+set_key hide-user-image true
+set_key clock-format "%a %d %b %H:%M"
+set_key indicators "~host;~spacer;~clock;~spacer;~session;~power"
+echo "LightDM greeter synced (shown at next login screen)"

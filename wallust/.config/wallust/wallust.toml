@@ -14,3 +14,4 @@ i3 = { src = 'i3', dst = '~/.config/i3/colors.conf' }
 rofi = { src = 'colors-rofi.rasi', target = '~/.config/rofi/colors-rofi.rasi' }
 dunst = { template = "dunstrc", target = "~/.config/dunst/dunstrc" }
 lock = { template = "lock.sh", target = "~/.config/i3/scripts/lock.sh" }
+colors_sh = { template = "colors.sh", target = "~/.cache/wallust/colors.sh" }

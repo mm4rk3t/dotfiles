@@ -6,6 +6,8 @@ feh --bg-fill "$WALL"
 # PNG copy for i3lock (lock screen shows the same wallpaper)
 magick "$WALL" -resize 1920x1080^ -gravity center -extent 1920x1080 "$HOME/.cache/lock-wallpaper.png"
 "$HOME/.cargo/bin/wallust" run "$WALL"
+# GTK theme recolored with the new accent (new GTK windows pick it up)
+"$HOME/.local/bin/gtk-theme-wallust" >/dev/null
 dunstctl reload
 i3-msg reload
 

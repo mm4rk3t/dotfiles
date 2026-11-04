@@ -105,9 +105,18 @@ install_udev_rules() {
     sudo udevadm control --reload
 }
 
-set_login_background() {
-    log "Using the default wallpaper as the LightDM login background"
-    "$DOTFILES/bin/.local/bin/set-lightdm-background" "$DEFAULT_WALLPAPER"
+# Dark mode for GTK4/libadwaita and Electron/Chromium apps (they read the
+# portal setting, not settings.ini), and the wallust-recolored GTK theme.
+set_theme() {
+    log "Building the wallust GTK theme and enabling dark mode"
+    "$DOTFILES/bin/.local/bin/gtk-theme-wallust"
+    gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+    gsettings set org.gnome.desktop.interface gtk-theme Material-Black-Wallust
+}
+
+sync_login_screen() {
+    log "Matching the LightDM login screen to the desktop"
+    "$DOTFILES/bin/.local/bin/sync-lightdm" "$DEFAULT_WALLPAPER"
 }
 
 generate_colors() {
@@ -173,7 +182,8 @@ install_gtk_theme
 link_dotfiles
 configure_ai_tools
 install_udev_rules
-set_login_background
 generate_colors
+set_theme
+sync_login_screen
 
 log "Done. Log out and pick i3 at the login screen (or press \$mod+Shift+r if already in i3)."
