@@ -5,8 +5,9 @@ choice=$(printf '%s\n' "󰌾  Lock" "󰤄  Suspend" "󰍃  Log out" "󰜉  Reboo
   # so it lines up with the bar and the notifications.
   rofi -dmenu -i -no-custom -p "Power" -theme-str '
     window   { width: 220px; location: north east; anchor: north east; x-offset: -15px; y-offset: 57px; }
-    mainbox  { children: [ listview ]; }
-    listview { lines: 5; }')
+    mainbox  { children: [ listview ]; padding: 6px 0; }
+    listview { lines: 5; padding: 0; margin: 0; }
+    element  { margin: 0; }')
 case "$choice" in
   *Lock)      ~/.config/i3/scripts/lock.sh ;;
   *Suspend)   systemctl suspend ;;
