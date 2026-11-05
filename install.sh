@@ -117,8 +117,8 @@ install_udev_rules() {
 set_theme() {
     log "Building the wallust GTK theme and enabling dark mode"
     "$DOTFILES/bin/.local/bin/gtk-theme-wallust"
-    gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-    gsettings set org.gnome.desktop.interface gtk-theme Material-Black-Wallust
+    # GTK settings.ini, gsettings and Burp, for the current light/dark mode
+    "$DOTFILES/bin/.local/bin/theme-mode" apply
 }
 
 sync_login_screen() {
@@ -129,7 +129,7 @@ sync_login_screen() {
 generate_colors() {
     log "Generating colors from the default wallpaper with wallust"
     mkdir -p "$HOME/Pictures/sc" "$HOME/.cache/wallust"
-    "$HOME/.cargo/bin/wallust" run -s "$DEFAULT_WALLPAPER"
+    "$HOME/.cargo/bin/wallust" run -s -p "$("$DOTFILES/bin/.local/bin/theme-mode")16" "$DEFAULT_WALLPAPER"
     chmod +x "$HOME/.config/i3/scripts/lock.sh"
 }
 

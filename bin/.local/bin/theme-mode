@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Light/dark mode for the whole desktop.
+#   theme-mode            print the current mode (dark or light)
+#   theme-mode toggle     switch, then recolor everything from the wallpaper
+#   theme-mode dark|light set a mode, then recolor
+#   theme-mode apply      write GTK/portal/Burp settings for the current mode
+#                         without touching the running desktop (install.sh)
+set -euo pipefail
+
+STATE="$HOME/.cache/theme-mode"
+mode() { cat "$STATE" 2>/dev/null || echo dark; }
+
+apply() {
+    local m gtk dark scheme laf bg bg_alt bg_active
+    m="$(mode)"
+    if [[ $m == light ]]; then
+        gtk=Adwaita dark=0 scheme=prefer-light laf=Light
+        bg='#f2f2f2' bg_alt='#e0e0e0' bg_active='#d0d0d0'
+    else
+        gtk=Material-Black-Wallust dark=1 scheme=prefer-dark laf=Dark
+        bg='#000000' bg_alt='#1a1a1a' bg_active='#333333'
+    fi
+
+    # Bar and rofi backgrounds (pure black in dark mode, not a wallust color)
+    printf '[theme]\nbg = %s\nbg-alt = %s\nbg-active = %s\n' \
+        "$bg" "$bg_alt" "$bg_active" > "$HOME/.cache/theme-mode.ini"
+    printf '* {\n    bg: %s;\n    bg-alt: %s;\n}\n' "$bg" "$bg_alt" > "$HOME/.cache/theme-mode.rasi"
+
+    # GTK 3/4 apps read settings.ini (new windows pick it up)
+    for v in 3.0 4.0; do
+        mkdir -p "$HOME/.config/gtk-$v"
+        printf '[Settings]\ngtk-theme-name=%s\ngtk-application-prefer-dark-theme=%s\n' \
+            "$gtk" "$dark" > "$HOME/.config/gtk-$v/settings.ini"
+    done
+
+    # Firefox, Electron and libadwaita apps follow this through the portal, live
+    gsettings set org.gnome.desktop.interface gtk-theme "$gtk"
+    gsettings set org.gnome.desktop.interface color-scheme "$scheme" 2>/dev/null ||
+        gsettings set org.gnome.desktop.interface color-scheme default
+
+    # Burp ignores the system theme; the burpsuite wrapper loads this at launch
+    printf '{"user_options":{"display":{"user_interface":{"look_and_feel":"%s"}}}}\n' \
+        "$laf" > "$HOME/.cache/burp-theme.json"
+}
+
+case "${1:-}" in
+    "")       mode ;;
+    apply)    apply ;;
+    toggle)   [[ $(mode) == dark ]] && echo light > "$STATE" || echo dark > "$STATE" ;;&
+    dark|light) [[ $1 == toggle ]] || echo "$1" > "$STATE" ;;&
+    toggle|dark|light)
+        apply
+        # Regenerate wallust colors (palette follows the mode) and reload i3, bar, dunst
+        "$HOME/.config/i3/scripts/set_wallpaper.sh" >/dev/null 2>&1 &
+        disown
+        ;;
+    *) echo "usage: theme-mode [toggle|dark|light|apply]" >&2; exit 1 ;;
+esac

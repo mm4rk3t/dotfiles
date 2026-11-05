@@ -14,6 +14,9 @@
     spacing:          0;
 }
 
+/* Light/dark backgrounds, written by theme-mode (overrides bg/bg-alt above) */
+@import "~/.cache/theme-mode.rasi"
+
 window {
     width:            560px;
     background-color: @bg;
