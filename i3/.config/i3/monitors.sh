@@ -8,8 +8,14 @@ externals="DP-1 DP-2 HDMI-1 HDMI-2"
 # so probe once and reuse the result
 state=$(xrandr --query)
 
+# No laptop panel (e.g. a desktop): the first connected output is primary
+if ! printf '%s\n' "$state" | grep -q "^$primary connected"; then
+    primary=$(printf '%s\n' "$state" | awk '$2 == "connected" { print $1; exit }')
+fi
+
 secondary=
 for out in $externals; do
+    [ "$out" = "$primary" ] && continue
     if printf '%s\n' "$state" | grep -q "^$out connected"; then
         secondary=$out
     else
