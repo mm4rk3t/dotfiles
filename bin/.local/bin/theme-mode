@@ -51,8 +51,9 @@ case "${1:-}" in
     toggle|dark|light)
         apply
         # Regenerate wallust colors (palette follows the mode) and reload i3, bar, dunst
-        "$HOME/.config/i3/scripts/set_wallpaper.sh" >/dev/null 2>&1 &
-        disown
+        # in its own session: it restarts polybar, and when the bar's click
+        # launched us, killing polybar would otherwise kill this script too
+        setsid -f "$HOME/.config/i3/scripts/set_wallpaper.sh" >/dev/null 2>&1 </dev/null
         ;;
     *) echo "usage: theme-mode [toggle|dark|light|apply]" >&2; exit 1 ;;
 esac
