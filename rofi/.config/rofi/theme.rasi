@@ -14,6 +14,9 @@
     spacing:          0;
 }
 
+/* Light/dark backgrounds, written by theme-mode (overrides bg/bg-alt above) */
+@import "~/.cache/theme-mode.rasi"
+
 window {
     width:            560px;
     background-color: @bg;
@@ -38,7 +41,8 @@ element         { padding: 5px 8px; spacing: 8px; }
 element-icon    { size: 1.1em; }
 element-text    { text-color: inherit; vertical-align: 0.5; }
 element normal.normal, element alternate.normal { text-color: @foreground; }
-element selected.normal { background-color: @accent; text-color: @foreground; }
+/* The accent is a dark tone in both light and dark palettes, so near-white reads on it */
+element selected.normal { background-color: @accent; text-color: #f2f2f2; }
 element normal.urgent, element alternate.urgent { text-color: @urgent; }
 element selected.urgent { background-color: @urgent; text-color: @bg; }
 
