@@ -112,6 +112,12 @@ install_udev_rules() {
     sudo udevadm control --reload
 }
 
+enable_user_services() {
+    log "Enabling Bluetooth audio auto-switch"
+    systemctl --user daemon-reload
+    systemctl --user enable --now bt-audio-autoswitch.service
+}
+
 # Dark mode for GTK4/libadwaita and Electron/Chromium apps (they read the
 # portal setting, not settings.ini), and the wallust-recolored GTK theme.
 set_theme() {
@@ -189,6 +195,7 @@ install_gtk_theme
 link_dotfiles
 configure_ai_tools
 install_udev_rules
+enable_user_services
 generate_colors
 set_theme
 sync_login_screen
