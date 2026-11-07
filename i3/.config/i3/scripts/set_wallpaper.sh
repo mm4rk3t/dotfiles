@@ -30,3 +30,35 @@ polybar --list-monitors | while IFS=: read -r m rest; do
         MONITOR=$m polybar my_bar_secondary &
     fi
 done
+
+# Bring the tray back open/closed as it was before the restart
+setsid -f ~/.config/polybar/scripts/traytoggle.sh apply >/dev/null 2>&1 </dev/null
+
+# Tray icons that only pick their light/dark variant at startup keep the old
+# mode's look after a theme switch, so restart them (only when theme-mode ran
+# us, not on every i3 reload)
+if [[ -n ${THEME_SWITCH:-} ]]; then
+    # volumeicon redraws its icon only when the volume changes
+    if pgrep -x volumeicon >/dev/null; then
+        pkill -x volumeicon
+        setsid -f volumeicon >/dev/null 2>&1 </dev/null
+    fi
+    # Notion Electron picks tray.png from icons/{dark,light} only at launch.
+    # SIGTERM lets it save its tabs; wait for the single-instance lock to go.
+    if pgrep -x notion-electron >/dev/null; then
+        # Hidden in the tray = not managed by i3 (a window on another
+        # workspace still is), so check the i3 tree, not X visibility
+        hidden=1
+        i3-msg -t get_tree | grep -q '"class":"notion-electron"' && hidden=
+        pkill -TERM -x notion-electron
+        for _ in $(seq 50); do pgrep -x notion-electron >/dev/null || break; sleep 0.1; done
+        if [[ -n $hidden ]]; then
+            # Was in the tray: come back in the tray only
+            setsid -f "/opt/Notion Electron/notion-electron" --disable-backgrounding-occluded-windows \
+                --hide-on-startup >/dev/null 2>&1 </dev/null
+        else
+            # Window was open: via the desktop entry, same flags as from rofi
+            setsid -f gtk-launch notion-electron >/dev/null 2>&1 </dev/null
+        fi
+    fi
+fi

@@ -1,0 +1,26 @@
+[Desktop Entry]
+# Override of the RPM entry: without this flag Chromium never paints the tab bar
+# view under i3 and it stays a blank white strip at the top of the window.
+# TryExec hides the entry if the RPM is uninstalled.
+Name=Notion Electron
+Exec="/opt/Notion Electron/notion-electron" --disable-backgrounding-occluded-windows %U
+TryExec=/opt/Notion Electron/notion-electron
+Terminal=false
+Type=Application
+Icon=notion-electron
+StartupWMClass=notion-electron
+Categories=Utility;Office;
+Actions=Options;Updates;About;
+Comment=Unofficial Notion desktop client made with Electron for Linux
+
+[Desktop Action Options]
+Name=Options
+Exec=dbus-send --session --type=signal --dest=io.github.anechunaev.NotionElectron /io/github/anechunaev/NotionElectron io.github.anechunaev.NotionElectron.Options
+
+[Desktop Action Updates]
+Name=Updates
+Exec=dbus-send --session --type=signal --dest=io.github.anechunaev.NotionElectron /io/github/anechunaev/NotionElectron io.github.anechunaev.NotionElectron.Updates
+
+[Desktop Action About]
+Name=About
+Exec=dbus-send --session --type=signal --dest=io.github.anechunaev.NotionElectron /io/github/anechunaev/NotionElectron io.github.anechunaev.NotionElectron.About

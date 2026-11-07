@@ -3,7 +3,7 @@
 #   theme-mode            print the current mode (dark or light)
 #   theme-mode toggle     switch, then recolor everything from the wallpaper
 #   theme-mode dark|light set a mode, then recolor
-#   theme-mode apply      write GTK/portal/Burp settings for the current mode
+#   theme-mode apply      write GTK/xsettings/portal/Burp settings for the current mode
 #                         without touching the running desktop (install.sh)
 set -euo pipefail
 
@@ -26,12 +26,19 @@ apply() {
         "$bg" "$bg_alt" "$bg_active" > "$HOME/.cache/theme-mode.ini"
     printf '* {\n    bg: %s;\n    bg-alt: %s;\n}\n' "$bg" "$bg_alt" > "$HOME/.cache/theme-mode.rasi"
 
-    # GTK 3/4 apps read settings.ini (new windows pick it up)
+    # GTK 3/4 apps read settings.ini (new windows pick it up). GTK3 gets
+    # prefer-dark=0: our dark theme has no gtk-dark.css so it changes nothing
+    # there, and XSETTINGS can't update it live, so an app opened in dark mode
+    # would stay on dark Adwaita after switching to light
     for v in 3.0 4.0; do
         mkdir -p "$HOME/.config/gtk-$v"
         printf '[Settings]\ngtk-theme-name=%s\ngtk-application-prefer-dark-theme=%s\n' \
-            "$gtk" "$dark" > "$HOME/.config/gtk-$v/settings.ini"
+            "$gtk" "$([[ $v == 3.0 ]] && echo 0 || echo "$dark")" > "$HOME/.config/gtk-$v/settings.ini"
     done
+
+    # Running GTK3 apps follow XSETTINGS (there is no GNOME daemon under i3), live
+    printf 'Net/ThemeName "%s"\n' "$gtk" > "$HOME/.cache/xsettingsd.conf"
+    pkill -HUP -x xsettingsd 2>/dev/null || true
 
     # Firefox, Electron and libadwaita apps follow this through the portal, live
     gsettings set org.gnome.desktop.interface gtk-theme "$gtk"
@@ -53,7 +60,7 @@ case "${1:-}" in
         # Regenerate wallust colors (palette follows the mode) and reload i3, bar, dunst
         # in its own session: it restarts polybar, and when the bar's click
         # launched us, killing polybar would otherwise kill this script too
-        setsid -f "$HOME/.config/i3/scripts/set_wallpaper.sh" >/dev/null 2>&1 </dev/null
+        THEME_SWITCH=1 setsid -f "$HOME/.config/i3/scripts/set_wallpaper.sh" >/dev/null 2>&1 </dev/null
         ;;
     *) echo "usage: theme-mode [toggle|dark|light|apply]" >&2; exit 1 ;;
 esac
