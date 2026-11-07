@@ -45,3 +45,6 @@ make
 curl
 unzip
 playerctl
+volumeicon
+pavucontrol
+xsettingsd
