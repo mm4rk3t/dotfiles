@@ -50,6 +50,9 @@ if [[ -n ${THEME_SWITCH:-} ]]; then
         # workspace still is), so check the i3 tree, not X visibility
         hidden=1
         i3-msg -t get_tree | grep -q '"class":"notion-electron"' && hidden=
+        # A Notion started a few seconds ago (e.g. by the previous theme
+        # switch) may not have mapped its window yet: don't send it to the tray
+        (( $(ps -o etimes= -p "$(pgrep -o -x notion-electron)") < 20 )) && hidden=
         pkill -TERM -x notion-electron
         for _ in $(seq 50); do pgrep -x notion-electron >/dev/null || break; sleep 0.1; done
         if [[ -n $hidden ]]; then
