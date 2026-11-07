@@ -14,7 +14,7 @@ DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin fonts fontconfig volumeicon applications)
 ENGRAM_VERSION=3.6.0
 CODEWHALE_VERSION=0.10.2
-DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/forest-clouds.jpg"
+DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/pink-clouds.png"
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 INSTALL_PACKAGES=1
