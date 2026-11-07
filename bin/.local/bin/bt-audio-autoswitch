@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Make a Bluetooth audio sink the default output as soon as it appears.
+#
+# Volume keys, volumeicon and polybar all act on @DEFAULT_SINK@. If a
+# Bluetooth speaker connects but the default stays on another device, those
+# controls silently change the wrong sink. Moving the default also moves
+# streams that follow it (anything without a pinned target).
+
+set -u
+
+switch_to_bluetooth() {
+    local sink
+    # Highest index = most recently added bluez sink
+    sink=$(pactl list short sinks | awk '$2 ~ /^bluez_output\./ {print $2}' | tail -n1)
+    [[ -n $sink ]] || return 0
+    [[ $(pactl get-default-sink) == "$sink" ]] && return 0
+    pactl set-default-sink "$sink"
+    echo "default sink -> $sink"
+}
+
+# Catch a speaker that was already connected when we started
+switch_to_bluetooth
+
+pactl subscribe | while read -r line; do
+    [[ $line == "Event 'new' on sink #"* ]] || continue
+    # bluez sink may take a moment to finish setting up its profile
+    sleep 1
+    switch_to_bluetooth
+done
