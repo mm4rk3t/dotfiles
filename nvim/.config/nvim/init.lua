@@ -28,6 +28,9 @@ require("lazy").setup({
 })
 
 require("neopywal").setup({
+    -- The live reloader posts a multi-line info message on every theme switch,
+    -- which forces a hit-enter prompt; keep only warnings and errors
+    notify = "warn",
     use_palette = {
         dark = "wallust",
         light = "tokyonight"
