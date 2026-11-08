@@ -2,6 +2,10 @@
 
 My Fedora + i3 desktop: polybar, rofi, dunst, alacritty, picom, i3lock-color, zsh (oh-my-zsh) and Neovim. Colors are generated from the wallpaper by [wallust](https://codeberg.org/explosion-mental/wallust).
 
+![Desktop switching from dark to light mode and back](assets/demo.gif)
+
+Light/dark mode (`theme-mode toggle`, or the sun icon in the bar) recolors i3, polybar, the terminals, Neovim and GTK apps live.
+
 ## New machine
 
 ```sh
