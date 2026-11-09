@@ -11,6 +11,10 @@ fi
 # tray app started below inherits them, and they pile up 3 per theme switch
 # until fs.inotify.max_user_instances runs out
 for fd in /proc/$$/fd/<3->(N:t); do { exec {fd}>&- } 2>/dev/null; done
+# i3 (started by lightdm, which skips ~/.zprofile) has no ~/.local/bin in PATH.
+# The bars started below inherit our PATH, and their theme module calls
+# theme-mode for both the icon and the click, so put it back here
+[[ :$PATH: == *:$HOME/.local/bin:* ]] || export PATH=$HOME/.local/bin:$PATH
 # Wallpaper: the image given as $1 (random-wallpaper), else the one already
 # set when this is a light/dark switch, else the pinned one (login, i3 restart)
 PINNED=$HOME/Pictures/wallpapers/ethiopian-manuscripts.jpg
