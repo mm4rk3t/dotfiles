@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # Pinned wallpaper. For a random one instead:
 #   WALL=$(find ~/Pictures/wallpapers -type f | shuf -n1)
-WALL=~/Pictures/wallpapers/pink-clouds.png
+WALL=~/Pictures/wallpapers/ethiopian-manuscripts.jpg
 feh --bg-fill "$WALL"
 # PNG copy for i3lock (lock screen shows the same wallpaper)
 magick "$WALL" -resize 1920x1080^ -gravity center -extent 1920x1080 "$HOME/.cache/lock-wallpaper.png"
