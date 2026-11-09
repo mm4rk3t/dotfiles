@@ -6,7 +6,7 @@
 for fd in /proc/$$/fd/<3->(N:t); do { exec {fd}>&- } 2>/dev/null; done
 # Pinned wallpaper. For a random one instead:
 #   WALL=$(find ~/Pictures/wallpapers -type f | shuf -n1)
-WALL=~/Pictures/wallpapers/ethiopian-manuscripts.jpg
+WALL=${1:-$HOME/Pictures/wallpapers/ethiopian-manuscripts.jpg}
 feh --bg-fill "$WALL"
 # PNG copy for i3lock (lock screen shows the same wallpaper)
 magick "$WALL" -resize 1920x1080^ -gravity center -extent 1920x1080 "$HOME/.cache/lock-wallpaper.png"
