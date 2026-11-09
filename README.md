@@ -48,7 +48,7 @@ Each top-level directory is a stow package that mirrors `$HOME`:
 ## Wallpaper
 
 The pinned wallpaper is `WALL` in `i3/.config/i3/scripts/set_wallpaper.sh`, applied on every login and i3 restart together with a fresh wallust palette. `random-wallpaper` picks any other image under `~/Pictures/wallpapers` (including `papes-of-paintings/`, 72 paintings from /wg/) and applies it the same way, until the next login or i3 restart brings the pinned one back. `set_wallpaper.sh <image>` applies a specific one.
-| `claude`    | `~/.claude/CLAUDE.md`, global instructions for every agent |
+| `claude`    | `~/.claude`: `CLAUDE.md` (global instructions), `settings.json` (plugins, model, status line, engram permissions), `statusline-command.sh` |
 | `codewhale` | Codewhale `AGENTS.md` and the engram context hook     |
 
 ## AI agents

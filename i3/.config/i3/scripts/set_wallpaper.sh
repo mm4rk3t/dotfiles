@@ -1,4 +1,11 @@
 #!/usr/bin/env zsh
+# One run at a time: a new palette takes ~10 s the first time wallust sees an
+# image, and a second theme switch or wallpaper change meanwhile would race it
+# (doubled bars, colors from the wrong wallpaper or mode). flock(1) holds the
+# lock until we exit; the fd loop below keeps it out of the bar and tray apps
+if [[ -z ${SET_WALLPAPER_LOCKED:-} ]]; then
+    SET_WALLPAPER_LOCKED=1 exec flock "$HOME/.cache/set_wallpaper.lock" "$0" "$@"
+fi
 # Close fds inherited from whoever launched us. polybar's click handler passes
 # its inotify fds (no CLOEXEC) through theme-mode; without this every bar and
 # tray app started below inherits them, and they pile up 3 per theme switch
