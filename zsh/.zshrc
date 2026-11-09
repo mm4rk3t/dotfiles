@@ -104,6 +104,17 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 export PATH="$HOME/.local/bin:$PATH"
 
+# Claude Code never remembers trust for $HOME (session-only by design), so
+# when started from ~ run it from ~/.claude-home instead, with ~ still reachable.
+claude() {
+  if [[ $PWD == $HOME ]]; then
+    mkdir -p ~/.claude-home
+    (cd ~/.claude-home && command claude --add-dir "$HOME" "$@")
+  else
+    command claude "$@"
+  fi
+}
+
 # kubectl via minikube
 
 # Machine-local secrets and overrides (not in the dotfiles repo)
