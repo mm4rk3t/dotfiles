@@ -4,7 +4,7 @@
 set -euo pipefail
 DIR="${WALLPAPER_DIR:-$HOME/Pictures/wallpapers}"
 current=$(grep -o "'[^']*'" ~/.fehbg 2>/dev/null | tr -d "'" | tail -1 || true)
-pick=$(find "$DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+pick=$(find -L "$DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
   ! -path "$current" | shuf -n1)
 [[ -n $pick ]] || { echo "no images in $DIR" >&2; exit 1; }
 echo "$pick"
