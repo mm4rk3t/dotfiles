@@ -1,4 +1,9 @@
 #!/usr/bin/env zsh
+# Close fds inherited from whoever launched us. polybar's click handler passes
+# its inotify fds (no CLOEXEC) through theme-mode; without this every bar and
+# tray app started below inherits them, and they pile up 3 per theme switch
+# until fs.inotify.max_user_instances runs out
+for fd in /proc/$$/fd/<3->(N:t); do { exec {fd}>&- } 2>/dev/null; done
 # Pinned wallpaper. For a random one instead:
 #   WALL=$(find ~/Pictures/wallpapers -type f | shuf -n1)
 WALL=~/Pictures/wallpapers/ethiopian-manuscripts.jpg
