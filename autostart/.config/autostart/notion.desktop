@@ -1,0 +1,9 @@
+[Desktop Entry]
+# Started at login by dex; i3 moves it to workspace 10 (for_window in i3 config).
+# The Notion installed here is the snap (class notion-desktop)
+Name=Notion
+Exec=/var/lib/snapd/snap/bin/notion-desktop
+TryExec=/var/lib/snapd/snap/bin/notion-desktop
+Icon=notion-desktop
+Type=Application
+Terminal=false

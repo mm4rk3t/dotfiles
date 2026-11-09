@@ -152,7 +152,7 @@ bindsym $mod+r mode "resize"
 # "workspace $ws10" here would yank you to the music workspace on each track
 for_window [class="Spotify"] move to workspace number $ws9
 # Notion gets its own workspace too (move only, same reason as Spotify)
-for_window [class="notion-electron"] move to workspace number $ws10
+for_window [class="^notion-(electron|desktop)$"] move to workspace number $ws10
 
 # Polybar calendar popup: float it where the mouse is (the date in the bar)
 for_window [title="^polybar-calendar$"] floating enable, move position mouse, sticky enable
