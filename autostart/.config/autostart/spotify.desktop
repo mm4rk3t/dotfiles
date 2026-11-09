@@ -1,0 +1,8 @@
+[Desktop Entry]
+# Started at login by dex; i3 moves it to workspace 9 (for_window in i3 config)
+Name=Spotify
+Exec=/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=spotify com.spotify.Client
+TryExec=/usr/bin/flatpak
+Icon=com.spotify.Client
+Type=Application
+Terminal=false

@@ -1,0 +1,9 @@
+[Desktop Entry]
+# Started at login by dex; i3 moves it to workspace 10 (for_window in i3 config).
+# Same flag as applications/notion-electron.desktop (blank tab bar under i3 without it)
+Name=Notion Electron
+Exec="/opt/Notion Electron/notion-electron" --disable-backgrounding-occluded-windows
+TryExec=/opt/Notion Electron/notion-electron
+Icon=notion-electron
+Type=Application
+Terminal=false

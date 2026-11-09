@@ -14,6 +14,9 @@ DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin fonts fontconfig volumeicon applications xfce)
 ENGRAM_VERSION=3.6.0
 CODEWHALE_VERSION=0.10.2
+NOTION_ELECTRON_VERSION=2.5.0
+# No checksum file in its releases: pinned hash of Notion_Electron-$NOTION_ELECTRON_VERSION-x86_64.rpm
+NOTION_ELECTRON_SHA256=513e414193e32a0965ea6dec00c7152f434fdadd36fbe19066dd156215a3005d
 DEFAULT_WALLPAPER="$HOME/Pictures/wallpapers/pink-clouds.png"
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
@@ -147,6 +150,20 @@ fetch_verified() {
     (cd "$dir" && grep " $asset\$" "$sums" | sha256sum -c -)
 }
 
+# Notion Electron (unofficial Notion client) from its GitHub release RPM.
+# Unsigned, so the pinned sha256 is the only check; dnf needs --nogpgcheck.
+install_notion() {
+    [[ "$(rpm -q --qf '%{VERSION}' notion-electron 2>/dev/null)" == "$NOTION_ELECTRON_VERSION" ]] && return
+    log "Installing Notion Electron $NOTION_ELECTRON_VERSION"
+    local tmp rpm="Notion_Electron-${NOTION_ELECTRON_VERSION}-x86_64.rpm"
+    tmp="$(mktemp -d)"
+    curl -fsSLo "$tmp/$rpm" \
+        "https://github.com/anechunaev/notion-electron/releases/download/v$NOTION_ELECTRON_VERSION/$rpm"
+    echo "$NOTION_ELECTRON_SHA256  $tmp/$rpm" | sha256sum -c -
+    sudo dnf install -y --nogpgcheck "$tmp/$rpm"
+    rm -rf "$tmp"
+}
+
 install_ai_tools() {
     local tmp
     tmp="$(mktemp -d)"
@@ -192,6 +209,7 @@ configure_ai_tools() {
 (( INSTALL_PACKAGES )) && install_packages
 install_gtk_theme
 (( INSTALL_PACKAGES )) && install_ai_tools
+(( INSTALL_PACKAGES )) && install_notion
 link_dotfiles
 configure_ai_tools
 install_udev_rules
