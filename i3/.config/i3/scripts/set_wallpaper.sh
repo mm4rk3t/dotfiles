@@ -4,9 +4,17 @@
 # tray app started below inherits them, and they pile up 3 per theme switch
 # until fs.inotify.max_user_instances runs out
 for fd in /proc/$$/fd/<3->(N:t); do { exec {fd}>&- } 2>/dev/null; done
-# Pinned wallpaper. For a random one instead:
-#   WALL=$(find ~/Pictures/wallpapers -type f | shuf -n1)
-WALL=~/Pictures/wallpapers/ethiopian-manuscripts.jpg
+# Wallpaper: the image given as $1 (random-wallpaper), else the one already
+# set when this is a light/dark switch, else the pinned one (login, i3 restart)
+PINNED=$HOME/Pictures/wallpapers/ethiopian-manuscripts.jpg
+if [[ -n ${1:-} ]]; then
+    WALL=$1
+elif [[ -n ${THEME_SWITCH:-} ]]; then
+    WALL=$(sed -n "s/.*'\(.*\)'.*/\1/p" ~/.fehbg 2>/dev/null | tail -1)
+    [[ -f $WALL ]] || WALL=$PINNED
+else
+    WALL=$PINNED
+fi
 feh --bg-fill "$WALL"
 # PNG copy for i3lock (lock screen shows the same wallpaper)
 magick "$WALL" -resize 1920x1080^ -gravity center -extent 1920x1080 "$HOME/.cache/lock-wallpaper.png"

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Random wallpaper from ~/Pictures/wallpapers (recursive) + regenerated colorscheme.
+# Temporary: on login / i3 restart the pinned WALL in set_wallpaper.sh comes back.
+set -euo pipefail
+DIR="${WALLPAPER_DIR:-$HOME/Pictures/wallpapers}"
+current=$(grep -o "'[^']*'" ~/.fehbg 2>/dev/null | tr -d "'" | tail -1 || true)
+pick=$(find -L "$DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+  ! -path "$current" | shuf -n1)
+[[ -n $pick ]] || { echo "no images in $DIR" >&2; exit 1; }
+echo "$pick"
+setsid -f "$HOME/.config/i3/scripts/set_wallpaper.sh" "$pick" >/dev/null 2>&1 </dev/null

@@ -47,6 +47,7 @@ floating_modifier $mod
 
 bindsym $mod+Return exec alacritty
 bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/lock.sh
+bindsym $mod+Shift+w exec --no-startup-id ~/.local/bin/random-wallpaper
 bindsym $mod+Shift+q kill
 bindsym $mod+d exec --no-startup-id "rofi -show drun -show-icons"
 
