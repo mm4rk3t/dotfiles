@@ -27,8 +27,16 @@ else
     WALL=$PINNED
 fi
 feh --bg-fill "$WALL"
-# PNG copy for i3lock (lock screen shows the same wallpaper)
-magick "$WALL" -resize 1920x1080^ -gravity center -extent 1920x1080 "$HOME/.cache/lock-wallpaper.png"
+# PNG copy for i3lock (lock screen shows the same wallpaper). It takes 1-2 s,
+# so only rebuild it when the wallpaper changed (not on a light/dark switch),
+# and do it in the background instead of holding up the recolor
+LOCK_PNG=$HOME/.cache/lock-wallpaper.png
+if [[ ! -f $LOCK_PNG || $(cat "$LOCK_PNG.src" 2>/dev/null) != "$WALL" ]]; then
+    {
+        magick "$WALL" -resize 1920x1080^ -gravity center -extent 1920x1080 "$LOCK_PNG.$$.png" &&
+            mv -f "$LOCK_PNG.$$.png" "$LOCK_PNG" && print -r -- "$WALL" > "$LOCK_PNG.src"
+    } &!
+fi
 # Palette follows light/dark mode (theme-mode); the bar and rofi need its files
 [[ -f ~/.cache/theme-mode.ini ]] || theme-mode apply
 MODE=$(cat ~/.cache/theme-mode 2>/dev/null || echo dark)
