@@ -5,3 +5,6 @@ import = ["~/.cache/wallust/alacritty.toml"]
 key = "Return"
 mods = "Shift"
 chars = "\u001B\r"
+
+[font]
+size = 10.0
