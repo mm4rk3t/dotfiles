@@ -166,3 +166,8 @@ for_window [class="(?i)pavucontrol"] floating enable, resize set 720 480, move p
 # 1Password: main window and Quick Access (X11 class com.onepassword.OnePassword)
 for_window [class="(?i)onepassword|1password"] floating enable, move position center
 for_window [class="(?i)onepassword|1password" title="^(?!Quick Access)"] resize set 1000 720, move position center
+
+# Steam: the main window tiles; friends list, chats and small dialogs float.
+# Float only, no move: i3 reruns for_window on title changes (chat titles change)
+for_window [class="^steam$" title="^Friends List$"] floating enable, resize set 360 700
+for_window [class="^steam$" title=" - Chat$|^Steam Settings$|^Steam - News|^Steam Guard|^Screenshot Uploader"] floating enable

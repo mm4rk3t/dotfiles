@@ -49,3 +49,8 @@ volumeicon
 pavucontrol
 xsettingsd
 gh
+
+# Apps (steam comes from RPM Fusion nonfree, which install.sh enables)
+calibre
+krita
+steam
