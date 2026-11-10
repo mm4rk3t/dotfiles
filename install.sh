@@ -36,6 +36,14 @@ install_packages() {
 
     log "Installing dnf packages"
     sudo dnf install -y dnf-plugins-core
+    # RPM Fusion (free + nonfree): steam lives in nonfree
+    if ! rpm -q rpmfusion-nonfree-release >/dev/null; then
+        local fedora
+        fedora="$(rpm -E %fedora)"
+        sudo dnf install -y \
+            "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$fedora.noarch.rpm" \
+            "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$fedora.noarch.rpm"
+    fi
     mapfile -t pkgs < <(read_list "$DOTFILES/packages/dnf.txt")
     sudo dnf install -y "${pkgs[@]}"
 
