@@ -15,28 +15,33 @@ for fd in /proc/$$/fd/<3->(N:t); do { exec {fd}>&- } 2>/dev/null; done
 # The bars started below inherit our PATH, and their theme module calls
 # theme-mode for both the icon and the click, so put it back here
 [[ :$PATH: == *:$HOME/.local/bin:* ]] || export PATH=$HOME/.local/bin:$PATH
-# Wallpaper: the image given as $1 (random-wallpaper), else the one already
-# set when this is a light/dark switch, else the pinned one (login, i3 restart)
-PINNED=$HOME/Pictures/wallpapers/ethiopian-manuscripts.jpg
+# Wallpaper: the image given as $1 (random-wallpaper), else the last one set
+# (~/.fehbg survives reboots, so login, i3 restart and light/dark switches all
+# keep it), else the default if that file is gone or was never written
+DEFAULT=$HOME/Pictures/wallpapers/ethiopian-manuscripts.jpg
 if [[ -n ${1:-} ]]; then
     WALL=$1
-elif [[ -n ${THEME_SWITCH:-} ]]; then
-    WALL=$(sed -n "s/.*'\(.*\)'.*/\1/p" ~/.fehbg 2>/dev/null | tail -1)
-    [[ -f $WALL ]] || WALL=$PINNED
 else
-    WALL=$PINNED
+    WALL=$(sed -n "s/.*'\(.*\)'.*/\1/p" ~/.fehbg 2>/dev/null | tail -1)
+    [[ -f $WALL ]] || WALL=$DEFAULT
 fi
 feh --bg-fill "$WALL"
 # PNG copy for i3lock (lock screen shows the same wallpaper). It takes 1-2 s,
 # so only rebuild it when the wallpaper changed (not on a light/dark switch),
 # and do it in the background instead of holding up the recolor
 LOCK_PNG=$HOME/.cache/lock-wallpaper.png
-if [[ ! -f $LOCK_PNG || $(cat "$LOCK_PNG.src" 2>/dev/null) != "$WALL" ]]; then
-    {
+# LightDM shows the same image. sync-lightdm (sudo, once) left this file owned
+# by us; write it in place so it keeps its owner and SELinux label
+GREETER_BG=/usr/share/backgrounds/dotfiles-wallpaper.png
+{
+    if [[ ! -f $LOCK_PNG || $(cat "$LOCK_PNG.src" 2>/dev/null) != "$WALL" ]]; then
         magick "$WALL" -resize 1920x1080^ -gravity center -extent 1920x1080 "$LOCK_PNG.$$.png" &&
             mv -f "$LOCK_PNG.$$.png" "$LOCK_PNG" && print -r -- "$WALL" > "$LOCK_PNG.src"
-    } &!
-fi
+    fi
+    if [[ -w $GREETER_BG ]] && ! cmp -s "$LOCK_PNG" "$GREETER_BG"; then
+        cat "$LOCK_PNG" > "$GREETER_BG"
+    fi
+} &!
 # Palette follows light/dark mode (theme-mode); the bar and rofi need its files
 [[ -f ~/.cache/theme-mode.ini ]] || theme-mode apply
 MODE=$(cat ~/.cache/theme-mode 2>/dev/null || echo dark)
@@ -49,6 +54,9 @@ MODE=$(cat ~/.cache/theme-mode 2>/dev/null || echo dark)
     "$HOME/.cargo/bin/wallust" run -p "${MODE}16" --dynamic-threshold "$WALL"
 # GTK theme recolored with the new accent (new GTK windows pick it up)
 gtk-theme-wallust >/dev/null
+# Same accent on the LightDM greeter (its theme dir is ours, see sync-lightdm)
+GREETER_THEME=/usr/share/themes/Material-Black-Wallust
+[[ -w $GREETER_THEME ]] && cp -rT "$HOME/.local/share/themes/Material-Black-Wallust" "$GREETER_THEME"
 dunstctl reload
 # Sun/moon icon on the bar
 polybar-msg action theme hook 0 >/dev/null 2>&1

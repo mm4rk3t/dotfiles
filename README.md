@@ -47,7 +47,9 @@ Each top-level directory is a stow package that mirrors `$HOME`:
 
 ## Wallpaper
 
-The pinned wallpaper is `WALL` in `i3/.config/i3/scripts/set_wallpaper.sh`, applied on every login and i3 restart together with a fresh wallust palette. `random-wallpaper` picks any other image under `~/Pictures/wallpapers` (including `papes-of-paintings/`, 72 paintings from /wg/) and applies it the same way, until the next login or i3 restart brings the pinned one back. `set_wallpaper.sh <image>` applies a specific one.
+`i3/.config/i3/scripts/set_wallpaper.sh` reapplies the last wallpaper (read from `~/.fehbg`) on every login and i3 restart, together with a fresh wallust palette; `DEFAULT` in that script is the fallback when there is none. `random-wallpaper` picks any other image under `~/Pictures/wallpapers` (including `papes-of-paintings/`, 72 paintings from /wg/) and it stays until the next change. `set_wallpaper.sh <image>` applies a specific one.
+
+The LightDM login screen follows along: `sync-lightdm` (sudo, run once by `install.sh`) points the greeter at `/usr/share/backgrounds/dotfiles-wallpaper.png` and `/usr/share/themes/Material-Black-Wallust` and leaves both owned by you, so `set_wallpaper.sh` updates the image and accent there on every change without sudo.
 | `claude`    | `~/.claude`: `CLAUDE.md` (global instructions), `settings.json` (plugins, model, status line, engram permissions), `statusline-command.sh` |
 | `codewhale` | Codewhale `AGENTS.md` and the engram context hook     |
 
