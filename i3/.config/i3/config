@@ -46,6 +46,8 @@ bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
 
 floating_modifier $mod
+# Default minimum is 75x50, which pads small floats like the one-row tray popup
+floating_minimum_size 30 x 30
 
 bindsym $mod+Return exec alacritty
 bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/lock.sh
@@ -159,6 +161,13 @@ for_window [class="notion-electron"] move to workspace number $ws10
 
 # Polybar calendar popup: float it where the mouse is (the date in the bar)
 for_window [title="^polybar-calendar$"] floating enable, move position mouse, sticky enable
+
+# Tray popup (toggled by the arrow in polybar): stalonetray inside trayframe.py,
+# which draws its own subtle 1px border (i3's would turn accent on hover); picom
+# adds the shadow. Floating, starts hidden. stalonetray is only managed for a
+# moment before the frame takes it, so just keep it out of sight meanwhile
+for_window [class="^trayframe$"] floating enable, border none, move scratchpad
+for_window [class="^stalonetray$"] floating enable, border none, move scratchpad
 
 # Settings popups from the bar/tray (wifi, bluetooth, volume) float centered
 for_window [class="(?i)^nm-connection-editor$"] floating enable, resize set 720 480, move position center
