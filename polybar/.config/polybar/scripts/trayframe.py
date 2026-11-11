@@ -56,6 +56,9 @@ X.XMapWindow.argtypes = [ctypes.c_void_p, ctypes.c_ulong]
 X.XSetWindowBackground.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_ulong]
 X.XClearArea.argtypes = [ctypes.c_void_p, ctypes.c_ulong] + [ctypes.c_int] * 2 + [ctypes.c_uint] * 2 + [ctypes.c_int]
 X.XFlush.argtypes = [ctypes.c_void_p]
+X.XMoveWindow.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_int, ctypes.c_int]
+X.XTranslateCoordinates.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_ulong, ctypes.c_int,
+                                    ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
 X.XFree.argtypes = [ctypes.c_void_p]
 X.XDefaultRootWindow.restype = ctypes.c_ulong
 X.XDefaultRootWindow.argtypes = [ctypes.c_void_p]
@@ -128,6 +131,13 @@ def find_tray():
     return int(out[0]) if out else None
 
 
+def position_in_frame(xid):
+    x, y, child = ctypes.c_int(), ctypes.c_int(), ctypes.c_ulong()
+    X.XTranslateCoordinates(dpy, xid, frame_xid, 0, 0, ctypes.byref(x), ctypes.byref(y),
+                            ctypes.byref(child))
+    return x.value, y.value
+
+
 def tick():
     """Keep the tray inside the frame. i3 manages it when it first maps and,
     once it loses it, reparents it back to the root window (more than once
@@ -138,9 +148,15 @@ def tick():
     if state["xid"] is None:
         state["xid"] = find_tray()
     xid = state["xid"]
-    if xid and query_tree(xid)[0] not in (None, frame_xid):
+    parent = query_tree(xid)[0] if xid else None
+    if parent not in (None, frame_xid):
         X.XReparentWindow(dpy, xid, frame_xid, 1, 1)
         X.XMapWindow(dpy, xid)
+        X.XFlush(dpy)
+    elif parent == frame_xid and position_in_frame(xid) != (1, 1):
+        # stalonetray thinks it's a top-level window: when it grows (a new
+        # icon row) it moves itself to root coordinates, out of the frame
+        X.XMoveWindow(dpy, xid, 1, 1)
         X.XFlush(dpy)
     return True
 

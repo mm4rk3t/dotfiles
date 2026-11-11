@@ -64,6 +64,7 @@ case "${1:-}" in
             w=${w:-$((COLS * (ICON + 8)))}; h=${h:-$((ICON + 8))}
             # The tray isn't managed by i3 inside the frame, so this sticks
             xdotool windowsize "$(tray)" "$w" "$h"
+            xdotool windowmove "$(tray)" 1 1   # relative to the frame; trayframe.py also enforces it
             w=$((w + 2)); h=$((h + 2))
             # scratchpad show opens on the focused workspace, which may be on the
             # other monitor: focus the output under the mouse (the clicked bar) first
