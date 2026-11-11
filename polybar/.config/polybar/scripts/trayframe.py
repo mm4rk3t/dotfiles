@@ -208,6 +208,17 @@ win.connect("unmap-event", on_unmap)
 
 apply_colors()
 GLib.timeout_add(300, tick)
+# i3 shows stalonetray where it first maps until the frame takes it (see the
+# i3 config), so look for it often during the first few seconds
+fast = {"left": 100}
+
+
+def fast_tick():
+    fast["left"] -= 1
+    return tick() and fast["left"] > 0
+
+
+GLib.timeout_add(30, fast_tick)
 GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1, apply_colors)
 # Quit cleanly on SIGTERM/SIGINT so the tray goes too (stalonetray can ignore
 # SIGTERM, hence kill)
