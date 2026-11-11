@@ -11,7 +11,7 @@ set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin fonts fontconfig volumeicon applications xfce flameshot)
+STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin fonts fontconfig volumeicon applications xfce)
 ENGRAM_VERSION=3.6.0
 CODEWHALE_VERSION=0.10.2
 NOTION_ELECTRON_VERSION=2.5.0
@@ -110,6 +110,11 @@ link_dotfiles() {
         # generates (colors.conf, lock.sh, dunstrc...) never land in the repo.
         stow --no-folding --restow -d "$DOTFILES" -t "$HOME" "$pkg"
     done
+    # Flameshot writes UI state (draw color, sizes...) back into its config, so
+    # it gets a copy of the tracked defaults instead of a symlink into the repo.
+    mkdir -p "$HOME/.config/flameshot"
+    [[ -e "$HOME/.config/flameshot/flameshot.ini" ]] ||
+        cp "$DOTFILES/system/flameshot/flameshot.ini" "$HOME/.config/flameshot/flameshot.ini"
     [[ -d "$BACKUP_DIR" ]] && log "Previous files saved in $BACKUP_DIR"
     fc-cache -f "$HOME/.local/share/fonts" >/dev/null
 }
