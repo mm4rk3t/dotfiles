@@ -73,7 +73,7 @@ if [[ -n ${THEME_SWITCH:-} ]]; then
     # volumeicon redraws its icon only when the volume changes
     if pgrep -x volumeicon >/dev/null; then
         pkill -x volumeicon
-        setsid -f volumeicon >/dev/null 2>&1 </dev/null
+        setsid -f "$HOME/.local/bin/volumeicon-themed" >/dev/null 2>&1 </dev/null
     fi
     # Notion Electron picks tray.png from icons/{dark,light} only at launch.
     # SIGKILL: SIGTERM/INT/HUP all make Electron crash (SIGILL + core dump)
