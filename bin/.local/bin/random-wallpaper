@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Random wallpaper from ~/Pictures/wallpapers (recursive) + regenerated colorscheme.
-# Temporary: on login / i3 restart the pinned WALL in set_wallpaper.sh comes back.
+# Persistent: set_wallpaper.sh reuses the last one (~/.fehbg) on login / i3 restart.
 set -euo pipefail
 DIR="${WALLPAPER_DIR:-$HOME/Pictures/wallpapers}"
 current=$(grep -o "'[^']*'" ~/.fehbg 2>/dev/null | tr -d "'" | tail -1 || true)

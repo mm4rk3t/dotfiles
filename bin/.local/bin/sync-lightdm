@@ -2,15 +2,18 @@
 # Make the LightDM login screen match the desktop: background, the wallust
 # GTK theme (dark, same accent), the bar font, and a minimal top panel.
 #
-#   sync-lightdm                 # keep the current background
-#   sync-lightdm /path/to/image  # also set a new background
+#   sync-lightdm                 # background = current lock-screen image
+#   sync-lightdm /path/to/image  # background = this image
 #
 # The greeter runs as the lightdm user and can't read ~, so the image, the
-# theme and the font are copied to system dirs. Needs sudo. Re-run after
-# changing wallpaper to carry the new accent over.
+# theme and the font are copied to system dirs. Needs sudo, but only once:
+# the background file and the theme dir are left owned by you, so
+# set_wallpaper.sh refreshes both on every wallpaper change without sudo.
 set -euo pipefail
 
 conf=/etc/lightdm/lightdm-gtk-greeter.conf
+bg=/usr/share/backgrounds/dotfiles-wallpaper.png
+sys_theme=/usr/share/themes/Material-Black-Wallust
 theme="$HOME/.local/share/themes/Material-Black-Wallust"
 font_dir="$HOME/.local/share/fonts/MonaspaceXenon"
 
@@ -25,16 +28,17 @@ set_key() {
     fi
 }
 
-if [[ -n "${1:-}" ]]; then
-    [[ -f "$1" ]] || { echo "not a file: $1" >&2; exit 1; }
-    dest="/usr/share/backgrounds/$(basename "$1")"
-    sudo install -m644 "$1" "$dest"
-    set_key background "$dest"
-fi
+img="${1:-$HOME/.cache/lock-wallpaper.png}"
+[[ -f "$img" ]] || { echo "not a file: $img" >&2; exit 1; }
+# Written in place (not replaced) from then on, so it keeps owner and SELinux
+# label. The greeter sniffs the format, so a JPEG under .png still loads
+sudo install -m644 -o "$USER" -g "$(id -gn)" "$img" "$bg"
+set_key background "$bg"
 
-sudo rm -rf /usr/share/themes/Material-Black-Wallust
+sudo rm -rf "$sys_theme"
 sudo cp -r "$theme" /usr/share/themes/
-sudo chmod -R a+rX /usr/share/themes/Material-Black-Wallust
+sudo chown -R "$USER:$(id -gn)" "$sys_theme"
+sudo chmod -R a+rX "$sys_theme"
 
 sudo install -d /usr/local/share/fonts/monaspace
 sudo install -m644 "$font_dir"/*.ttf /usr/local/share/fonts/monaspace/
