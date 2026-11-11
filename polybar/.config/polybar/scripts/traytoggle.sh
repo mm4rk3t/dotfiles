@@ -2,6 +2,7 @@
 # Windows-style tray overflow: the tray lives in a small stalonetray grid
 # window that pops up under the bar's arrow when clicked.
 #   traytoggle.sh toggle   show/hide the popup (bar click)
+#   traytoggle.sh close    hide the popup (trayframe.py, on a click outside it)
 #   traytoggle.sh apply    start the tray if needed, recolor it for the current
 #                          theme and sync the bar arrow
 # i3 has one border color for all windows (the accent once hovered/focused), so
@@ -12,7 +13,7 @@
 # manages and keeps in its scratchpad while hidden (see the i3 for_window rules).
 DIR="$(dirname "$(readlink -f "$0")")"
 COLS=4          # icons per row; the grid grows downwards
-ICON=22         # icon size in px
+ICON=18         # icon size in px
 GAP_Y=52        # popup top edge: bar offset (15) + bar height + border + gap
 frame() { xdotool search --classname '^trayframe$' 2>/dev/null | head -1; }
 tray() { xdotool search --classname '^stalonetray$' 2>/dev/null | head -1; }
@@ -28,6 +29,12 @@ def walk(n, ws=None):
     for c in n.get("nodes", []) + n.get("floating_nodes", []): walk(c, ws)
 walk(json.load(sys.stdin)); sys.exit(1)'
 }
+
+# A click on the bar arrow while open first closes the popup (outside click),
+# then runs toggle, which must not reopen it right away
+CLOSED="${XDG_RUNTIME_DIR:-/tmp}/traytoggle-closed"
+now_ms() { date +%s%3N; }
+hide() { i3-msg -q '[class="^trayframe$"] move scratchpad'; arrow 0; now_ms > "$CLOSED"; }
 
 arrow() { polybar-msg action traytoggle hook "$1" >/dev/null 2>&1; }   # 0 = 󰅀 (closed), 1 = 󰅃 (open)
 
@@ -45,7 +52,9 @@ case "${1:-}" in
     toggle)
         [[ -z $(frame) ]] && { start; sleep 1; }
         if visible; then
-            i3-msg -q '[class="^trayframe$"] move scratchpad'; arrow 0
+            hide
+        elif (( $(now_ms) - $(cat "$CLOSED" 2>/dev/null || echo 0) < 500 )); then
+            :   # just closed by this same click
         else
             # Both --shell outputs set X/Y, so read the mouse X before anything else
             mx=$(xdotool getmouselocation --shell | sed -n 's/^X=//p')
@@ -71,6 +80,7 @@ print(next((o["rect"]["x"] + o["rect"]["width"] for o in json.load(sys.stdin) if
             i3-msg -q "focus output $out; [class=\"^trayframe\$\"] scratchpad show, resize set $w $h, move absolute position $x $GAP_Y"
             arrow 1
         fi ;;
+    close) visible && hide ;;
     apply)
         if [[ -z $(frame) || -z $(tray) ]]; then start
         else pkill -USR1 -f "python3 $DIR/trayframe.py"; fi
@@ -78,5 +88,5 @@ print(next((o["rect"]["x"] + o["rect"]["width"] for o in json.load(sys.stdin) if
         for _ in $(seq 50); do
             if visible; then arrow 1; else arrow 0; fi && break; sleep 0.1
         done ;;
-    *) echo "usage: traytoggle.sh toggle|apply" >&2; exit 1 ;;
+    *) echo "usage: traytoggle.sh toggle|close|apply" >&2; exit 1 ;;
 esac

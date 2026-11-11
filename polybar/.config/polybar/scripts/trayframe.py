@@ -57,6 +57,9 @@ X.XSetWindowBackground.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_ulo
 X.XClearArea.argtypes = [ctypes.c_void_p, ctypes.c_ulong] + [ctypes.c_int] * 2 + [ctypes.c_uint] * 2 + [ctypes.c_int]
 X.XFlush.argtypes = [ctypes.c_void_p]
 X.XFree.argtypes = [ctypes.c_void_p]
+X.XDefaultRootWindow.restype = ctypes.c_ulong
+X.XDefaultRootWindow.argtypes = [ctypes.c_void_p]
+X.XQueryPointer.argtypes = [ctypes.c_void_p, ctypes.c_ulong] + [ctypes.c_void_p] * 7
 dpy = X.XOpenDisplay(None)
 
 colors = {"bg": None, "border": None}
@@ -141,6 +144,51 @@ def tick():
         X.XFlush(dpy)
     return True
 
+
+def pointer():
+    """(x, y, button mask) of the mouse, in root coordinates."""
+    r, c = ctypes.c_ulong(), ctypes.c_ulong()
+    rx, ry, wx, wy = (ctypes.c_int() for _ in range(4))
+    mask = ctypes.c_uint()
+    X.XQueryPointer(dpy, X.XDefaultRootWindow(dpy), *(ctypes.byref(v) for v in
+                    (r, c, rx, ry, wx, wy, mask)))
+    return rx.value, ry.value, mask.value & (0x1f << 8)  # Button1-5 masks
+
+
+CLOSE = [os.path.join(os.path.dirname(os.path.abspath(__file__)), "traytoggle.sh"), "close"]
+watch = {"id": None, "buttons": 0}
+
+
+def check_click():
+    """Close the popup when a mouse button goes down outside it, like a menu.
+    Polls the pointer instead of grabbing it: a grab would steal the clicks
+    meant for the icons, which belong to other apps."""
+    x, y, buttons = pointer()
+    pressed = buttons & ~watch["buttons"]
+    watch["buttons"] = buttons
+    if pressed:
+        gw = win.get_window()
+        _, fx, fy = gw.get_origin()
+        if not (fx <= x < fx + gw.get_width() and fy <= y < fy + gw.get_height()):
+            subprocess.Popen(CLOSE)
+    return True
+
+
+def on_map(*_):
+    # Buttons already down (the click on the bar arrow that opened it) don't count
+    watch["buttons"] = pointer()[2]
+    if watch["id"] is None:
+        watch["id"] = GLib.timeout_add(25, check_click)
+
+
+def on_unmap(*_):
+    if watch["id"] is not None:
+        GLib.source_remove(watch["id"])
+        watch["id"] = None
+
+
+win.connect("map-event", on_map)
+win.connect("unmap-event", on_unmap)
 
 apply_colors()
 GLib.timeout_add(300, tick)
