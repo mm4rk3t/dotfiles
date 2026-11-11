@@ -11,7 +11,7 @@ set -euo pipefail
 
 export PATH="$HOME/.local/bin:$PATH"
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin fonts fontconfig volumeicon applications xfce)
+STOW_PACKAGES=(i3 polybar rofi alacritty picom wallust gtk zsh nvim wallpaper claude codewhale autostart bin fonts fontconfig volumeicon applications xfce flameshot)
 ENGRAM_VERSION=3.6.0
 CODEWHALE_VERSION=0.10.2
 NOTION_ELECTRON_VERSION=2.5.0

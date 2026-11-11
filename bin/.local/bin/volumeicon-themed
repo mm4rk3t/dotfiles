@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# volumeicon with icons that match light/dark mode. Its "Default" theme draws
+# the GTK symbolic icons, which stay black on the dark tray, so pick its own
+# white or black set instead. The tracked config is the base; the themed copy
+# lives next to it (untracked) and volumeicon reads it via -c.
+dir="$HOME/.config/volumeicon"
+[[ $(cat "$HOME/.cache/theme-mode" 2>/dev/null || echo dark) == light ]] \
+    && theme='Black Gnome' || theme='White Gnome'
+sed "s/^theme=.*/theme=$theme/" "$dir/volumeicon" > "$dir/themed"
+exec volumeicon -c themed "$@"

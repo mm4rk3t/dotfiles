@@ -16,6 +16,7 @@ dex-autostart
 xdg-desktop-portal-gtk
 network-manager-applet
 blueman
+udiskie
 brightnessctl
 pulseaudio-utils
 lxappearance
@@ -31,6 +32,7 @@ ripgrep
 maim
 xclip
 xdotool
+stalonetray
 flameshot
 
 # Fonts

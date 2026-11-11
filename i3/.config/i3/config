@@ -31,6 +31,8 @@ exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XAUTHO
 exec --no-startup-id sh -c 'theme-mode apply; exec xsettingsd -c ~/.cache/xsettingsd.conf'
 exec --no-startup-id dex-autostart --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/scripts/lock.sh
+# USB/removable drives: tray icon to mount, unmount and eject
+exec --no-startup-id udiskie --tray --notify
 
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
@@ -44,6 +46,8 @@ bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
 
 floating_modifier $mod
+# Default minimum is 75x50, which pads small floats like the one-row tray popup
+floating_minimum_size 30 x 30
 
 bindsym $mod+Return exec alacritty
 bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/lock.sh
@@ -88,6 +92,9 @@ bindsym $mod+a focus parent
 bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/sc/$(date).png"
 bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/sc/$(date).png"
 bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Pictures/sc/$(date).png"
+
+# Flameshot: select a region and annotate it (Windows-style Win+Shift+S)
+bindsym $mod+Shift+s exec --no-startup-id flameshot gui
 
 ## Clipboard Screenshots
 bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png
@@ -154,9 +161,21 @@ bindsym $mod+r mode "resize"
 for_window [class="Spotify"] move to workspace number $ws9
 # Notion gets its own workspace too (move only, same reason as Spotify)
 for_window [class="notion-electron"] move to workspace number $ws10
+# Slack and the browsers (Firefox, Brave) set their class before mapping, so
+# assign works (it acts once, when the window opens, so windows moved elsewhere
+# later stay put)
+assign [class="(?i)^slack$"] number $ws1
+assign [class="(?i)firefox|^brave-browser$"] number $ws2
 
 # Polybar calendar popup: float it where the mouse is (the date in the bar)
 for_window [title="^polybar-calendar$"] floating enable, move position mouse, sticky enable
+
+# Tray popup (toggled by the arrow in polybar): stalonetray inside trayframe.py,
+# which draws its own subtle 1px border (i3's would turn accent on hover); picom
+# adds the shadow. Floating, starts hidden. stalonetray is only managed for a
+# moment before the frame takes it, so just keep it out of sight meanwhile
+for_window [class="^trayframe$"] floating enable, border none, move scratchpad
+for_window [class="^stalonetray$"] floating enable, border none, move scratchpad
 
 # Settings popups from the bar/tray (wifi, bluetooth, volume) float centered
 for_window [class="(?i)^nm-connection-editor$"] floating enable, resize set 720 480, move position center
