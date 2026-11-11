@@ -40,7 +40,13 @@ fi
 # Palette follows light/dark mode (theme-mode); the bar and rofi need its files
 [[ -f ~/.cache/theme-mode.ini ]] || theme-mode apply
 MODE=$(cat ~/.cache/theme-mode 2>/dev/null || echo dark)
-"$HOME/.cargo/bin/wallust" run -p "${MODE}16" "$WALL"
+# Some images don't have enough distinct colors for a palette (mostly light16
+# on dark, muddy paintings): wallust exits with "Not enough colors!" and writes
+# nothing, leaving the other mode's colors on the bar. Retry letting it lower
+# the threshold until it finds enough (only on failure, so wallpapers that
+# already work keep their usual palette)
+"$HOME/.cargo/bin/wallust" run -p "${MODE}16" "$WALL" ||
+    "$HOME/.cargo/bin/wallust" run -p "${MODE}16" --dynamic-threshold "$WALL"
 # GTK theme recolored with the new accent (new GTK windows pick it up)
 gtk-theme-wallust >/dev/null
 dunstctl reload
