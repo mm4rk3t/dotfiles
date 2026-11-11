@@ -93,6 +93,9 @@ bindsym Print exec --no-startup-id maim "/home/$USER/Pictures/sc/$(date).png"
 bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/sc/$(date).png"
 bindsym Shift+Print exec --no-startup-id maim --select "/home/$USER/Pictures/sc/$(date).png"
 
+# Flameshot: select a region and annotate it (Windows-style Win+Shift+S)
+bindsym $mod+Shift+s exec --no-startup-id flameshot gui
+
 ## Clipboard Screenshots
 bindsym Ctrl+Print exec --no-startup-id maim | xclip -selection clipboard -t image/png
 bindsym Ctrl+$mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
