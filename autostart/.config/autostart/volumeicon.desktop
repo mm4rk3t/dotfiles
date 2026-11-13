@@ -1,6 +1,5 @@
 [Desktop Entry]
 Type=Application
 Name=Volume Icon
-Comment=Tray volume control, themed for light/dark mode (overrides /etc/xdg/autostart)
-Exec=sh -c '"$HOME/.local/bin/volumeicon-themed"'
-NoDisplay=true
+Comment=Hidden: started from the i3 config instead (with a delay), and this overrides /etc/xdg/autostart
+Hidden=true

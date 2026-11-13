@@ -33,6 +33,10 @@ exec --no-startup-id dex-autostart --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/scripts/lock.sh
 # USB/removable drives: tray icon to mount, unmount and eject
 exec --no-startup-id udiskie --tray --notify
+# Volume tray icon. Started here, not from autostart: at login it raced the tray
+# (stalonetray) and audio devices and died silently. Wait for stalonetray (up to
+# 10s), then give it a moment more
+exec --no-startup-id sh -c 'for i in $(seq 20); do pgrep -x stalonetray >/dev/null && break; sleep 0.5; done; sleep 2; exec ~/.local/bin/volumeicon-themed'
 
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
