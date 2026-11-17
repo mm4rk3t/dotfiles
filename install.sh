@@ -114,7 +114,7 @@ link_dotfiles() {
     # it gets a copy of the tracked defaults instead of a symlink into the repo.
     mkdir -p "$HOME/.config/flameshot"
     [[ -e "$HOME/.config/flameshot/flameshot.ini" ]] ||
-        cp "$DOTFILES/system/flameshot/flameshot.ini" "$HOME/.config/flameshot/flameshot.ini"
+        sed "s|@HOME@|$HOME|g" "$DOTFILES/system/flameshot/flameshot.ini" > "$HOME/.config/flameshot/flameshot.ini"
     [[ -d "$BACKUP_DIR" ]] && log "Previous files saved in $BACKUP_DIR"
     fc-cache -f "$HOME/.local/share/fonts" >/dev/null
 }
