@@ -119,6 +119,28 @@ link_dotfiles() {
     fc-cache -f "$HOME/.local/share/fonts" >/dev/null
 }
 
+# The wallpaper collection lives in a separate private repo; only the default
+# wallpaper is in dotfiles. Without access this is skipped and the default is used.
+WALLPAPERS_REPO=https://github.com/mm4rk3t/wallpapers.git
+fetch_wallpapers() {
+    local dir="$HOME/Pictures/wallpapers"
+    if [[ -d "$dir/.git" ]]; then
+        git -C "$dir" pull -q --ff-only || log "Could not update $dir"
+        return 0
+    fi
+    log "Fetching wallpapers from $WALLPAPERS_REPO"
+    mkdir -p "$dir"
+    git -C "$dir" init -q -b main
+    if git -C "$dir" remote add origin "$WALLPAPERS_REPO" &&
+        GIT_TERMINAL_PROMPT=0 git -C "$dir" fetch -q origin &&
+        git -C "$dir" checkout -q -f -B main origin/main; then
+        git -C "$dir" branch -q -u origin/main
+    else
+        log "No access to $WALLPAPERS_REPO, keeping only the default wallpaper"
+        rm -rf "$dir/.git"
+    fi
+}
+
 install_udev_rules() {
     log "Installing udev rule for monitor hotplug"
     sudo cp "$DOTFILES/system/systemd/monitor-hotplug@.service" /etc/systemd/system/
@@ -253,6 +275,7 @@ install_gtk_theme
 (( INSTALL_PACKAGES )) && install_ai_tools
 (( INSTALL_PACKAGES )) && install_notion
 link_dotfiles
+fetch_wallpapers
 configure_ai_tools
 install_udev_rules
 enable_user_services

@@ -43,7 +43,7 @@ Each top-level directory is a stow package that mirrors `$HOME`:
 | `gtk`       | GTK 2/3 theme settings                                |
 | `zsh`       | `.zshrc`                                              |
 | `nvim`      | Neovim config (lazy.nvim + neopywal)                  |
-| `wallpaper` | `~/Pictures/wallpapers`, the default wallpaper        |
+| `wallpaper` | the default wallpaper (`pink-clouds.png`)             |
 | `claude`    | `~/.claude`: `CLAUDE.md` (global instructions), `statusline-command.sh` |
 | `codewhale` | Codewhale `AGENTS.md` and the engram context hook     |
 | `autostart` | XDG autostart entries                                 |
@@ -56,7 +56,11 @@ Codewhale and Claude Code settings, Flameshot defaults, the Metasploit repo).
 
 ## Wallpaper
 
-`i3/.config/i3/scripts/set_wallpaper.sh` reapplies the last wallpaper (read from `~/.fehbg`) on every login and i3 restart, together with a fresh wallust palette; `DEFAULT` in that script is the fallback when there is none. `random-wallpaper` picks any other image under `~/Pictures/wallpapers` (including `papes-of-paintings/`, 72 paintings from /wg/) and it stays until the next change. `set_wallpaper.sh <image>` applies a specific one.
+`i3/.config/i3/scripts/set_wallpaper.sh` reapplies the last wallpaper (read from `~/.fehbg`) on every login and i3 restart, together with a fresh wallust palette; `DEFAULT` in that script is the fallback when there is none. `random-wallpaper` picks any other image under `~/Pictures/wallpapers` (including `papes-of-paintings/`) and it stays until the next change. `set_wallpaper.sh <image>` applies a specific one.
+
+Only the default wallpaper is tracked here. The rest of the collection is a separate
+private repo that `install.sh` clones into `~/Pictures/wallpapers`; without access to
+it, that step is skipped and the default is used.
 
 The LightDM login screen follows along: `sync-lightdm` (sudo, run once by `install.sh`) points the greeter at `/usr/share/backgrounds/dotfiles-wallpaper.png` and `/usr/share/themes/Material-Black-Wallust` and leaves both owned by you, so `set_wallpaper.sh` updates the image and accent there on every change without sudo.
 
