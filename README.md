@@ -59,6 +59,23 @@ Claude Code is the main agent; Codewhale (DeepSeek) is optional for cheap bulk w
 
 Not tracked on purpose: `~/.claude/settings.json` (holds tokens and work plugins), `~/.claude.json`, API keys and the engram database. Codewhale refuses a symlinked `config.toml`, so it lives in `system/codewhale/` and is copied once; copy changes back by hand.
 
+## Pentest toolkit
+
+`./pentest.sh` installs the HackTheBox toolkit natively (safe to re-run). Package
+lists live in `packages/pentest-*.txt`; git checkouts go to `~/pentest/<category>`:
+
+```
+~/pentest/
+├── wordlists/   SecLists
+├── exploits/    exploitdb (searchsploit)
+├── web/         BurpSuite, nikto, WhatWeb
+├── windows/     Responder, enum4linux
+└── vpn/         HTB .ovpn files (mode 700, never committed)
+```
+
+Commands for all of them are wrappers in `~/.local/bin`. To add a git-based tool,
+add a `category name url` line to `packages/pentest-git.txt`.
+
 ## Generated files
 
 These are written by wallust from the templates and are deliberately **not** tracked. To change them, edit the template in `wallust/.config/wallust/templates/`:
