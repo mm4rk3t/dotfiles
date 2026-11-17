@@ -205,8 +205,37 @@ install_ai_tools() {
     rm -rf "$tmp"
 }
 
+# ~/.claude/settings.json = tracked base (system/claude/settings.json) deep-merged
+# with an optional untracked overlay for machine- or work-specific settings.
+# Regenerated on every run; the previous file is kept in the backup dir.
+CLAUDE_SETTINGS_LOCAL="$HOME/.config/dotfiles/claude-settings.local.json"
+write_claude_settings() {
+    local target="$HOME/.claude/settings.json"
+    mkdir -p "$HOME/.claude"
+    if [[ -f "$target" && ! -L "$target" ]]; then
+        mkdir -p "$BACKUP_DIR/.claude"
+        cp "$target" "$BACKUP_DIR/.claude/settings.json"
+    fi
+    rm -f "$target"
+    python3 -I - "$DOTFILES/system/claude/settings.json" "$CLAUDE_SETTINGS_LOCAL" "$target" <<'EOF'
+import json, os, sys
+base, local, target = sys.argv[1:]
+def merge(a, b):
+    for k, v in b.items():
+        a[k] = merge(a[k], v) if isinstance(v, dict) and isinstance(a.get(k), dict) else v
+    return a
+s = json.load(open(base))
+if os.path.exists(local):
+    s = merge(s, json.load(open(local)))
+with open(os.open(target, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as f:
+    json.dump(s, f, indent=2, ensure_ascii=False)
+    f.write("\n")
+EOF
+}
+
 # Codewhale rejects a symlinked config.toml, so it is copied instead of stowed.
 configure_ai_tools() {
+    write_claude_settings
     command -v engram >/dev/null || return 0
     log "Connecting engram to Claude Code and Codewhale"
     command -v claude >/dev/null && engram setup claude-code
