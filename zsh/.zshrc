@@ -119,3 +119,4 @@ claude() {
 
 # Machine-local secrets and overrides (not in the dotfiles repo)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+export PATH="$HOME/.cargo/bin:$PATH"
