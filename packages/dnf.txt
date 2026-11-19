@@ -12,6 +12,7 @@ zenity
 nitrogen
 xrandr
 xss-lock
+xset
 dex-autostart
 xdg-desktop-portal-gtk
 network-manager-applet

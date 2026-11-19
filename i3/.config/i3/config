@@ -32,6 +32,8 @@ exec --no-startup-id dbus-update-activation-environment --systemd DISPLAY XAUTHO
 exec --no-startup-id sh -c 'theme-mode apply; exec xsettingsd -c ~/.cache/xsettingsd.conf'
 exec --no-startup-id dex-autostart --autostart --environment i3
 exec --no-startup-id xss-lock --transfer-sleep-lock -- ~/.config/i3/scripts/lock.sh
+# Disable X screensaver blanking and DPMS (no idle lock/screen-off); needs the xset package
+exec --no-startup-id xset s off s noblank -dpms
 # USB/removable drives: tray icon to mount, unmount and eject
 exec --no-startup-id udiskie --tray --notify
 # Volume tray icon. Started here, not from autostart: at login it raced the tray
