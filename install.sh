@@ -255,29 +255,9 @@ with open(os.open(target, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as
 EOF
 }
 
-# Workspace trust lives in ~/.claude.json (untracked, rewritten by Claude Code),
-# so mark $HOME as trusted in place instead of tracking the file.
-trust_claude_home() {
-    python3 -I - "$HOME/.claude.json" "$HOME" <<'EOF'
-import json, os, sys
-path, home = sys.argv[1:]
-cfg = json.load(open(path)) if os.path.exists(path) else {}
-proj = cfg.setdefault("projects", {}).setdefault(home, {})
-if proj.get("hasTrustDialogAccepted") is True:
-    sys.exit(0)
-proj["hasTrustDialogAccepted"] = True
-tmp = path + ".tmp"
-with open(os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as f:
-    json.dump(cfg, f, indent=2, ensure_ascii=False)
-os.replace(tmp, path)
-print(f"trusted {home} in Claude Code")
-EOF
-}
-
 # Codewhale rejects a symlinked config.toml, so it is copied instead of stowed.
 configure_ai_tools() {
     write_claude_settings
-    trust_claude_home
     command -v engram >/dev/null || return 0
     log "Connecting engram to Claude Code and Codewhale"
     command -v claude >/dev/null && engram setup claude-code

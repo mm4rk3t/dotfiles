@@ -23,7 +23,7 @@ Then log out and choose i3 at the login screen.
 3. Unpacks the GTK theme from `assets/` into `~/.local/share/themes`.
 4. Installs Claude Code, [engram](https://github.com/Gentleman-Programming/engram) and [Codewhale](https://github.com/codewhale-hq/Codewhale) into `~/.local/bin` (versions pinned at the top of `install.sh`, checksums verified).
 5. Symlinks every config into `$HOME` with GNU stow. Existing files are moved to `~/.dotfiles-backup/<timestamp>/` first.
-6. Connects engram to Claude Code (`engram setup claude-code`) and Codewhale (MCP server), and copies `system/codewhale/config.toml` if there is none. Marks `$HOME` as a trusted Claude Code workspace in `~/.claude.json`.
+6. Connects engram to Claude Code (`engram setup claude-code`) and Codewhale (MCP server), and copies `system/codewhale/config.toml` if there is none.
 7. Runs wallust on the default wallpaper to generate the color files.
 
 Use `./install.sh --no-packages` to only relink configs and regenerate colors.
