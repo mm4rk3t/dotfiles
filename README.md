@@ -18,12 +18,12 @@ Then log out and choose i3 at the login screen.
 
 `install.sh` is safe to re-run. It:
 
-1. Installs the packages in `packages/dnf.txt`, the COPR packages in `packages/copr.txt` (i3lock-color) and the cargo crates in `packages/cargo.txt` (wallust).
+1. Installs the packages in `packages/dnf.txt`, the COPR packages in `packages/copr.txt` (i3lock-color) and the cargo crates in `packages/cargo.txt` (wallust). `xset` is among the dnf packages: the i3 config runs `xset s off s noblank -dpms` at login so the screen never blanks, turns off or locks on idle (it still locks on suspend).
 2. Installs oh-my-zsh and sets zsh as the login shell.
 3. Unpacks the GTK theme from `assets/` into `~/.local/share/themes`.
 4. Installs Claude Code, [engram](https://github.com/Gentleman-Programming/engram) and [Codewhale](https://github.com/codewhale-hq/Codewhale) into `~/.local/bin` (versions pinned at the top of `install.sh`, checksums verified).
 5. Symlinks every config into `$HOME` with GNU stow. Existing files are moved to `~/.dotfiles-backup/<timestamp>/` first.
-6. Connects engram to Claude Code (`engram setup claude-code`) and Codewhale (MCP server), and copies `system/codewhale/config.toml` if there is none.
+6. Connects engram to Claude Code (`engram setup claude-code`) and Codewhale (MCP server), and copies `system/codewhale/config.toml` if there is none. Marks `$HOME` as a trusted Claude Code workspace in `~/.claude.json`.
 7. Runs wallust on the default wallpaper to generate the color files.
 
 Use `./install.sh --no-packages` to only relink configs and regenerate colors.
