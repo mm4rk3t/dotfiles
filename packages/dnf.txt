@@ -57,3 +57,6 @@ gh
 calibre
 krita
 steam
+
+# Music production
+lmms
